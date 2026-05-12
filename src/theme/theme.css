@@ -1,0 +1,260 @@
+/**
+ * MRD Online Clinic marketing palette — cyan / navy / body gray / hero blue.
+ */
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /** Auth / marketing display — matches static `index.html` auth mockups */
+  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Landing / marketing */
+  --color-brand-cyan: #09d1e7;
+  --color-brand-navy: #0e163d;
+  --color-brand-body: #757575;
+  --color-brand-hero-blue: #2083ff;
+  --color-marketing-bg: #fafbfd;
+
+  /* Legacy kit aliases (dashboards / shared chrome) */
+  --color-brand-teal: #09d1e7;
+  --color-brand-royal: #0e163d;
+  --color-brand-royal-deep: #0a0f28;
+  --color-brand-landing: #eff6fc;
+  --color-brand-bg2: #2083ff;
+  --color-brand-sky: #67c8f0;
+  --color-brand-vet-lime: #c4e538;
+  --color-brand-stroke-soft: #e8eef7;
+  --color-brand-stroke-strong: #c5d5eb;
+
+  /* App shell semantics */
+  --color-background: var(--color-brand-landing);
+  --color-foreground: var(--color-brand-navy);
+  --color-card: #ffffff;
+  --color-card-foreground: var(--color-brand-navy);
+  --color-primary: var(--color-brand-cyan);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #eef4fb;
+  --color-secondary-foreground: var(--color-brand-navy);
+  --color-muted: #eef2f8;
+  --color-muted-foreground: var(--color-brand-body);
+  --color-border: #e4eaf4;
+  --color-input: #e4eaf4;
+  --color-ring: var(--color-brand-cyan);
+  --color-accent: var(--color-brand-hero-blue);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.9375rem;
+  --radius-2xl: 1rem;
+  --radius-marketing-xl: 0.9375rem;
+  --radius-marketing-2xl: 1rem;
+
+  --shadow-search: 0 20px 52px rgba(14, 22, 61, 0.094);
+  --shadow-float: 0 14px 40px rgba(14, 22, 61, 0.12);
+
+  --shadow-brand: 0 10px 40px -12px rgba(14, 22, 61, 0.18);
+}
+
+@layer utilities {
+  /* Marketing shell width (~1620px cap + gutter): navbar, hero, landing sections */
+  .max-w-site {
+    max-width: min(101.25rem, calc(100vw - 2rem));
+  }
+
+  /* Subtle grid + faint diagonal motif (closer to reference telemedicine kit) */
+  .bg-brand-marketing {
+    background-color: var(--color-marketing-bg);
+    background-image:
+      repeating-linear-gradient(
+        -12deg,
+        transparent,
+        transparent 47px,
+        rgba(14, 22, 61, 0.028) 47px,
+        rgba(14, 22, 61, 0.028) 48px
+      ),
+      linear-gradient(rgba(14, 22, 61, 0.034) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14, 22, 61, 0.034) 1px, transparent 1px);
+    background-size:
+      auto,
+      40px 40px,
+      40px 40px;
+    background-position: 0 0, 0 0, 0 0;
+  }
+
+  .bg-gradient-brand-primary {
+    background-image: linear-gradient(135deg, var(--color-brand-cyan) 0%, var(--color-brand-hero-blue) 100%);
+  }
+
+  /** Hero search “Search” chip — blue → cyan left-to-right (telemedicine kit reference) */
+  .bg-gradient-search-pill {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-brand-hero-blue) 0%,
+      var(--color-brand-cyan) 100%
+    );
+  }
+
+  .bg-gradient-brand-vet {
+    background-image: linear-gradient(135deg, var(--color-brand-cyan) 0%, var(--color-brand-vet-lime) 100%);
+  }
+
+  .text-gradient-brand {
+    color: var(--color-brand-cyan);
+  }
+
+  .border-gradient-brand-stroke {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--color-card), var(--color-card)) padding-box,
+      linear-gradient(135deg, var(--color-brand-stroke-soft), var(--color-brand-stroke-strong)) border-box;
+  }
+
+  .shadow-brand {
+    box-shadow: var(--shadow-brand);
+  }
+
+  .shadow-float {
+    box-shadow: var(--shadow-float);
+  }
+
+  .shadow-search {
+    box-shadow: var(--shadow-search);
+  }
+
+  /** Hero search — subtle edge definition (lighter than earlier kit) */
+  .shadow-hero-search-kit {
+    box-shadow:
+      0 2px 8px -2px rgb(14 22 61 / 0.05),
+      0 1px 3px -1px rgb(14 22 61 / 0.035);
+  }
+
+  /**
+   * “How it works” — soft clinical backdrop + corner hex mesh (telehealth reference).
+   * Pattern: nested hex strokes, hero blue at low opacity.
+   */
+  .bg-how-it-works-shell {
+    background-color: #f1f7fc;
+    background-image:
+      radial-gradient(ellipse 90% 75% at 8% 20%, rgb(207 238 253 / 0.55), transparent 58%),
+      radial-gradient(ellipse 85% 70% at 96% 88%, rgb(32 131 255 / 0.09), transparent 55%),
+      linear-gradient(180deg, #f5faff 0%, #edf4fb 100%);
+  }
+
+  .how-it-works-hex-tile {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='90' viewBox='0 0 52 90'%3E%3Cg fill='none' stroke='%232083ff' stroke-width='1' opacity='1'%3E%3Cpath d='M26 0 L52 15 L52 45 L26 60 L0 45 L0 15 Z'/%3E%3Cpath d='M26 30 L52 45 L52 75 L26 90 L0 75 L0 45 Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 52px 90px;
+  }
+
+  /** Auth layout — left pane (aligned with repo `index.html` auth reference) */
+  .bg-auth-visual {
+    background: linear-gradient(155deg, #04132a 0%, #0a2545 35%, #0d3a6e 75%, #1456a3 100%);
+  }
+
+  /** Auth — right pane soft grid + cool wash */
+  .bg-auth-form-canvas {
+    background-color: #fafbfd;
+    background-image:
+      linear-gradient(rgba(241, 245, 249, 0.9) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(241, 245, 249, 0.9) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 85% 65% at 70% 28%, black 0%, transparent 72%);
+  }
+}
+
+/* Auth hero SVGs — motion hooks copied from root `index.html` auth mockups */
+@keyframes auth-hero-float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes auth-hero-float-y-sm {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes auth-hero-pulse-soft {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes auth-hero-spin-slow {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes auth-hero-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.08);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.05);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+@keyframes auth-hero-typing {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.auth-hero-svg .anim-float {
+  animation: auth-hero-float-y 5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.auth-hero-svg .anim-float-sm {
+  animation: auth-hero-float-y-sm 4s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.auth-hero-svg .anim-pulse-soft {
+  animation: auth-hero-pulse-soft 3s ease-in-out infinite;
+}
+.auth-hero-svg .anim-spin-slow {
+  animation: auth-hero-spin-slow 50s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.auth-hero-svg .anim-heartbeat {
+  animation: auth-hero-heartbeat 1.8s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.auth-hero-svg .anim-typing-1 {
+  animation: auth-hero-typing 1.4s ease-in-out infinite;
+}
+.auth-hero-svg .anim-typing-2 {
+  animation: auth-hero-typing 1.4s ease-in-out infinite 0.2s;
+}
+.auth-hero-svg .anim-typing-3 {
+  animation: auth-hero-typing 1.4s ease-in-out infinite 0.4s;
+}
