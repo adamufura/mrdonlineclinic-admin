@@ -6,7 +6,6 @@ import {
   Menu,
   ScrollText,
   Search,
-  Shield,
   Stethoscope,
   Users,
   UsersRound,
@@ -14,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { toast } from 'sonner';
+import { BrandMark } from '@/components/brand/BrandMark';
 import { ConfirmModal } from '@/components/shared/confirm-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,14 +23,6 @@ import { normalizeAxiosError } from '@/lib/api/errors';
 import { cn } from '@/lib/utils/cn';
 import { ROUTES } from '@/router/routes';
 import { useAuthStore } from '@/stores/auth-store';
-
-function BrandMark() {
-  return (
-    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-teal-300 to-sky-400 shadow-[0_6px_18px_rgba(56,189,248,0.4)]">
-      <Shield className="h-4 w-4 text-white" strokeWidth={2.5} />
-    </div>
-  );
-}
 
 type NavIcon = typeof LayoutDashboard;
 

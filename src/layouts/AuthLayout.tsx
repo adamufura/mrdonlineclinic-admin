@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { AdminAuthAside } from '@/components/auth/AdminAuthAside';
+import { BrandMark } from '@/components/brand/BrandMark';
 import { AdminAuthFormTop } from '@/components/auth/AdminAuthFormTop';
 import { getMainAppUrl } from '@/config/env';
 
@@ -10,11 +11,13 @@ export function AuthLayout() {
     <div className="grid min-h-dvh grid-cols-1 font-sans text-brand-navy md:grid-cols-[1.05fr_1fr]">
       <div className="flex items-center justify-between border-b border-white/10 bg-auth-visual px-4 py-3.5 md:hidden">
         {mainApp ? (
-          <a href={mainApp} className="font-display text-[0.95rem] font-medium tracking-tight text-white">
+          <a href={mainApp} className="flex items-center gap-2 font-display text-[0.95rem] font-medium tracking-tight text-white">
+            <BrandMark size="sm" />
             MRD <span className="font-light text-white/70">Admin</span>
           </a>
         ) : (
-          <span className="font-display text-[0.95rem] font-medium tracking-tight text-white">
+          <span className="flex items-center gap-2 font-display text-[0.95rem] font-medium tracking-tight text-white">
+            <BrandMark size="sm" />
             MRD <span className="font-light text-white/70">Admin</span>
           </span>
         )}

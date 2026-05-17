@@ -1,15 +1,7 @@
-import { Shield } from 'lucide-react';
 import { AdminAuthHero } from '@/components/auth/AdminAuthHero';
+import { BrandMark } from '@/components/brand/BrandMark';
 import { getMainAppUrl } from '@/config/env';
 import { cn } from '@/lib/utils/cn';
-
-function BrandMark() {
-  return (
-    <div className="flex size-9 shrink-0 items-center justify-center rounded-[11px] bg-gradient-to-br from-teal-300 to-sky-400 shadow-[0_8px_24px_rgba(56,189,248,0.35)] ring-1 ring-white/25 sm:size-10">
-      <Shield className="size-5 text-white" strokeWidth={2.2} aria-hidden />
-    </div>
-  );
-}
 
 export function AdminAuthAside() {
   const mainApp = getMainAppUrl();
@@ -35,7 +27,7 @@ export function AdminAuthAside() {
       />
 
       <div className="relative z-10 flex items-center gap-2.5">
-        <BrandMark />
+        <BrandMark size="md" />
         {mainApp ? (
           <a href={mainApp} className="font-display text-[1.15rem] font-medium tracking-tight text-white sm:text-xl">
             MRD <span className="font-light text-white/70">Online Clinic</span>
