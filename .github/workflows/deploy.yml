@@ -17,11 +17,20 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASS }}
           script: |
+            set -euo pipefail
             export NVM_DIR="$HOME/.nvm"
-            source $NVM_DIR/nvm.sh
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             cd ~/htdocs/clinicadmin.mrdonline.ng
-            git pull origin main
-            npm install
+            git fetch origin main
+            git reset --hard origin/main
+            npm ci || npm install
+            rm -rf dist
             npm run build
-            rm -rf assets favicon.svg icons.svg .well-known
+            test -f dist/index.html
+            grep -q 'favicon.png' dist/index.html
+            rm -rf assets
+            rm -f index.html favicon.svg favicon.png apple-touch-icon.png icons.svg
             cp -r dist/* .
+            grep -q 'favicon.png' index.html
+            test -f favicon.png
+            echo "Deploy OK: $(head -1 index.html)"
