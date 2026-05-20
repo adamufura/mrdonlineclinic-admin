@@ -1,15 +1,43 @@
-import { useQuery } from '@tanstack/react-query';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ListToolbar } from '@/components/admin/list-toolbar';
+import { PageHeader, PrimaryActionButton } from '@/components/admin/page-header';
+import { PaginationBar } from '@/components/admin/pagination-bar';
+import { RecordList } from '@/components/admin/record-list';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { OnboardResultBanner } from '@/components/shared/onboard-result-banner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { listPatientsAdmin } from '@/features/admin/api';
+import { createPatientAdmin, listPatientsAdmin } from '@/features/admin/api';
+import { usePermissions } from '@/hooks/usePermissions';
 import { normalizeAxiosError } from '@/lib/api/errors';
+import { ROUTES } from '@/router/routes';
+
+const onboardSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  phoneNumber: z.string().min(5),
+});
+
+type OnboardForm = z.infer<typeof onboardSchema>;
 
 export default function PatientsPage() {
+  const { can } = usePermissions();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [onboardOpen, setOnboardOpen] = useState(false);
+  const [lastOnboardMsg, setLastOnboardMsg] = useState<string | null>(null);
   const limit = 20;
 
   useEffect(() => {
@@ -17,111 +45,140 @@ export default function PatientsPage() {
     return () => window.clearTimeout(t);
   }, [searchInput]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  const form = useForm<OnboardForm>({
+    resolver: zodResolver(onboardSchema),
+    defaultValues: { firstName: '', lastName: '', email: '', phoneNumber: '' },
+  });
+
   const query = useQuery({
-    queryKey: ['admin', 'patients', page, limit, debouncedSearch],
+    queryKey: ['admin', 'patients', page, limit, debouncedSearch, statusFilter],
     queryFn: () =>
       listPatientsAdmin({
         page,
         limit,
         ...(debouncedSearch ? { search: debouncedSearch } : {}),
+        ...(statusFilter ? { status: statusFilter } : {}),
       }),
+    enabled: can('patients:read'),
+  });
+
+  const onboardMut = useMutation({
+    mutationFn: (v: OnboardForm) => createPatientAdmin(v),
+    onSuccess: (data) => {
+      setLastOnboardMsg(data.message);
+      toast.success('Patient onboarded');
+      form.reset();
+      setOnboardOpen(false);
+      void qc.invalidateQueries({ queryKey: ['admin', 'patients'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'stats'] });
+    },
+    onError: (e) => toast.error(normalizeAxiosError(e).message),
   });
 
   const items = query.data?.items ?? [];
   const meta = query.data?.meta;
-  const totalPages = meta?.totalPages ?? 1;
+
+  const listItems = items.map((row) => ({
+    id: String(row._id),
+    title: [row.firstName, row.lastName].filter(Boolean).join(' '),
+    subtitle: row.email,
+    meta: row.phoneNumber ? `Phone: ${row.phoneNumber}` : undefined,
+    status: row.status,
+  }));
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-normal tracking-tight text-brand-navy md:text-[2rem]">Patients</h1>
-        <p className="mt-2 max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
-          Search the patient directory by name, email, or phone. This view is read-only for MVP oversight.
-        </p>
-      </div>
-
-      <div className="max-w-md">
-        <Label htmlFor="patient-search" className="text-muted-foreground">
-          Search
-        </Label>
-        <Input
-          id="patient-search"
-          value={searchInput}
-          onChange={(e) => {
-            setSearchInput(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Email, phone, or name…"
-          className="mt-1.5"
-        />
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-brand">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-border bg-muted/50 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Phone</th>
-                <th className="px-4 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {query.isLoading ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">
-                    Loading patients…
-                  </td>
-                </tr>
-              ) : query.isError ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-red-600">
-                    {normalizeAxiosError(query.error).message}
-                  </td>
-                </tr>
-              ) : items.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">
-                    No patients match your search.
-                  </td>
-                </tr>
-              ) : (
-                items.map((row) => (
-                  <tr key={String(row._id)} className="bg-card hover:bg-muted/30">
-                    <td className="px-4 py-3 font-medium text-foreground">
-                      {[row.firstName, row.lastName].filter(Boolean).join(' ')}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{row.email}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{row.phoneNumber}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{row.status}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>
-            Page {meta?.page ?? page} of {totalPages}
-            {typeof meta?.total === 'number' ? ` · ${meta.total} total` : null}
-          </span>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              Previous
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
+      <PageHeader
+        title="Patients"
+        description="Search and onboard patients registered on the MRD Online Clinic platform under Ministry oversight."
+        action={
+          can('patients:write') ? (
+            <PrimaryActionButton
+              onClick={() => {
+                setLastOnboardMsg(null);
+                setOnboardOpen(true);
+              }}
             >
-              Next
-            </Button>
+              <Plus className="size-4" />
+              Onboard patient
+            </PrimaryActionButton>
+          ) : undefined
+        }
+      />
+
+      {lastOnboardMsg ? <OnboardResultBanner message={lastOnboardMsg} /> : null}
+
+      <ListToolbar
+        search={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="Search by name, email, or phone…"
+        filters={[
+          {
+            id: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+              { value: '', label: 'All' },
+              { value: 'ACTIVE', label: 'Active' },
+              { value: 'SUSPENDED', label: 'Suspended' },
+              { value: 'DEACTIVATED', label: 'Deactivated' },
+              { value: 'PENDING_VERIFICATION', label: 'Pending verification' },
+            ],
+          },
+        ]}
+      />
+
+      <div className="space-y-0">
+        <RecordList
+          items={listItems}
+          loading={query.isLoading}
+          emptyMessage="No patients match your search."
+          onItemClick={(id) => navigate(ROUTES.patientDetail(id))}
+        />
+        <div className="overflow-hidden rounded-b-2xl border border-t-0 border-[#e8edf4] bg-white shadow-sm">
+          <PaginationBar page={page} meta={meta} onPageChange={setPage} />
+        </div>
+      </div>
+
+      {onboardOpen ? (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          <button type="button" className="absolute inset-0 bg-black/50" onClick={() => !onboardMut.isPending && setOnboardOpen(false)} />
+          <div className="relative z-[1] w-full max-w-md rounded-2xl border border-[#e8edf4] bg-white p-6 shadow-lg">
+            <h2 className="font-display text-lg font-medium text-brand-navy">Onboard patient</h2>
+            <form className="mt-4 space-y-3" onSubmit={form.handleSubmit((v) => onboardMut.mutate(v))}>
+              <div>
+                <Label>First name</Label>
+                <Input className="mt-1" {...form.register('firstName')} />
+              </div>
+              <div>
+                <Label>Last name</Label>
+                <Input className="mt-1" {...form.register('lastName')} />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input type="email" className="mt-1" {...form.register('email')} />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input className="mt-1" {...form.register('phoneNumber')} />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button type="button" variant="outline" onClick={() => setOnboardOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={onboardMut.isPending} className="bg-gradient-to-br from-teal-500 to-teal-700 text-white">
+                  {onboardMut.isPending ? 'Creating…' : 'Create account'}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }

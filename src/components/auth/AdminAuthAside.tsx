@@ -1,11 +1,9 @@
 import { AdminAuthHero } from '@/components/auth/AdminAuthHero';
-import { BrandMark } from '@/components/brand/BrandMark';
-import { getMainAppUrl } from '@/config/env';
+import { DualBrandMark } from '@/components/brand/DualBrandMark';
+import { MINISTRY_FULL_NAME } from '@/config/ministry';
 import { cn } from '@/lib/utils/cn';
 
 export function AdminAuthAside() {
-  const mainApp = getMainAppUrl();
-
   return (
     <aside
       className={cn(
@@ -17,34 +15,17 @@ export function AdminAuthAside() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_15%_20%,rgba(94,234,212,0.18),transparent_70%),radial-gradient(ellipse_60%_50%_at_85%_80%,rgba(56,189,248,0.28),transparent_70%),radial-gradient(ellipse_70%_50%_at_50%_110%,rgba(99,102,241,0.18),transparent_60%)]"
         aria-hidden
       />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.45] [mask-image:radial-gradient(ellipse_at_center,black_22%,transparent_70%)]"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
-          backgroundSize: '22px 22px',
-        }}
-        aria-hidden
-      />
 
-      <div className="relative z-10 flex items-center gap-2.5">
-        <BrandMark size="md" />
-        {mainApp ? (
-          <a href={mainApp} className="font-display text-[1.15rem] font-medium tracking-tight text-white sm:text-xl">
-            MRD <span className="font-light text-white/70">Online Clinic</span>
-          </a>
-        ) : (
-          <span className="font-display text-[1.15rem] font-medium tracking-tight text-white sm:text-xl">
-            MRD <span className="font-light text-white/70">Admin</span>
-          </span>
-        )}
+      <div className="relative z-10">
+        <DualBrandMark variant="sidebar" />
       </div>
 
       <AdminAuthHero />
 
       <div className="relative z-10 border-t border-white/[0.08] pt-6">
         <p className="max-w-sm font-display text-lg font-light leading-snug text-white/90">
-          Operations console for <em className="text-sky-300 not-italic">staff & compliance</em> — same trusted
-          clinic brand your patients see.
+          Secure console for <em className="text-sky-300 not-italic">{MINISTRY_FULL_NAME}</em> — oversee telemedicine
+          operations across Katsina State.
         </p>
       </div>
     </aside>

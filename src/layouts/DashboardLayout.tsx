@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Menu,
   ScrollText,
-  Search,
   Stethoscope,
   Users,
   UsersRound,
@@ -13,10 +12,13 @@ import {
 } from 'lucide-react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { toast } from 'sonner';
-import { BrandMark } from '@/components/brand/BrandMark';
+import { GlobalSearch } from '@/components/admin/global-search';
+import { DualBrandMark } from '@/components/brand/DualBrandMark';
+import { MINISTRY_FULL_NAME } from '@/config/ministry';
+import { usePermissions } from '@/hooks/usePermissions';
+import { ADMIN_ROLE_LABELS } from '@/lib/rbac';
 import { ConfirmModal } from '@/components/shared/confirm-modal';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { logout } from '@/features/auth/api';
 import { getMainAppUrl } from '@/config/env';
 import { normalizeAxiosError } from '@/lib/api/errors';
@@ -58,35 +60,44 @@ function NavRow({
   );
 }
 
-function SidebarNav({ onNavigate, showTeam }: { onNavigate?: () => void; showTeam: boolean }) {
+function SidebarNav({
+  onNavigate,
+  can,
+}: {
+  onNavigate?: () => void;
+  can: (p: import('@/lib/rbac').AdminPermission) => boolean;
+}) {
   return (
     <>
       <div className="px-2 pb-2">
         <div className="mb-2 px-2 pt-1 pb-4">
-          <Link to={ROUTES.dashboard} className="flex items-center gap-2.5" onClick={onNavigate}>
-            <BrandMark />
-            <span className="font-display text-[17px] font-medium tracking-tight text-white">
-              MRD <span className="font-light text-white/65">Admin</span>
-            </span>
+          <Link to={ROUTES.dashboard} className="block" onClick={onNavigate}>
+            <DualBrandMark variant="sidebar" />
           </Link>
         </div>
 
         <p className="px-3 pb-1.5 pt-3 text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">Operations</p>
         <nav className="flex flex-col gap-0.5">
           <NavRow to={ROUTES.dashboard} label="Dashboard" icon={LayoutDashboard} onNavigate={onNavigate} end />
-          <NavRow to={ROUTES.practitioners} label="Practitioners" icon={Stethoscope} onNavigate={onNavigate} />
-          <NavRow to={ROUTES.patients} label="Patients" icon={Users} onNavigate={onNavigate} />
-          <NavRow to={ROUTES.audit} label="Audit log" icon={ScrollText} onNavigate={onNavigate} />
+          {can('practitioners:read') ? (
+            <NavRow to={ROUTES.practitioners} label="Practitioners" icon={Stethoscope} onNavigate={onNavigate} />
+          ) : null}
+          {can('patients:read') ? (
+            <NavRow to={ROUTES.patients} label="Patients" icon={Users} onNavigate={onNavigate} />
+          ) : null}
+          {can('audit:read') ? (
+            <NavRow to={ROUTES.audit} label="Audit log" icon={ScrollText} onNavigate={onNavigate} />
+          ) : null}
         </nav>
       </div>
 
-      {showTeam ? (
+      {can('admins:read') ? (
         <div className="px-2 pb-2">
           <p className="px-3 pb-1.5 pt-3 text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">
-            Super admin
+            Administration
           </p>
           <nav className="flex flex-col gap-0.5">
-            <NavRow to={ROUTES.team} label="Team & invites" icon={UsersRound} onNavigate={onNavigate} />
+            <NavRow to={ROUTES.team} label="Ministry staff" icon={UsersRound} onNavigate={onNavigate} />
           </nav>
         </div>
       ) : null}
@@ -135,16 +146,16 @@ const sidebarShell =
 
 export function DashboardLayout() {
   const user = useAuthStore((s) => s.user);
+  const { can } = usePermissions();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [logoutBusy, setLogoutBusy] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const mainApp = getMainAppUrl();
 
-  const showTeam = user?.adminRole === 'SUPER_ADMIN';
-  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() || user.email : 'Admin';
-  const subtitle =
-    user?.adminRole === 'SUPER_ADMIN' ? 'Super administrator' : user?.adminRole === 'ADMIN' ? 'Administrator' : 'Console';
+  const roleKey = user?.adminRole as keyof typeof ADMIN_ROLE_LABELS | undefined;
+  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() || user.email : 'Staff';
+  const subtitle = roleKey && ADMIN_ROLE_LABELS[roleKey] ? ADMIN_ROLE_LABELS[roleKey] : MINISTRY_FULL_NAME;
   const initial = (user?.firstName?.[0] ?? user?.email?.[0] ?? 'A').toUpperCase();
 
   async function performLogout() {
@@ -185,7 +196,7 @@ export function DashboardLayout() {
     <div className="relative h-dvh overflow-hidden bg-[#f7f8fb] text-foreground">
       <aside className={cn(sidebarShell, 'fixed left-0 top-0 z-40 hidden lg:flex')}>
         <div className="relative z-[1] flex min-h-0 flex-1 flex-col gap-2">
-          <SidebarNav showTeam={showTeam} />
+          <SidebarNav can={can} />
           <SidebarChrome
             displayName={displayName}
             subtitle={subtitle}
@@ -214,7 +225,7 @@ export function DashboardLayout() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <SidebarNav onNavigate={() => setMobileOpen(false)} showTeam={showTeam} />
+              <SidebarNav onNavigate={() => setMobileOpen(false)} can={can} />
               <SidebarChrome
                 displayName={displayName}
                 subtitle={subtitle}
@@ -239,18 +250,7 @@ export function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </Button>
 
-          <div className="relative min-w-0 flex-1 max-lg:max-w-none lg:max-w-[460px]">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted-foreground" />
-            <Input
-              ref={searchRef}
-              type="search"
-              placeholder="Search practitioners, patients, or audit targets…"
-              className="h-9 border-[#e2e8f0] bg-[#eef1f6] pl-9 pr-14 text-[13px] shadow-none focus-visible:border-teal-500 focus-visible:bg-white focus-visible:ring-teal-500/20"
-            />
-            <kbd className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 rounded border border-[#e2e8f0] bg-white px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
-              ⌘K
-            </kbd>
-          </div>
+          <GlobalSearch inputRef={searchRef} />
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5">
             {mainApp ? (
@@ -290,7 +290,7 @@ export function DashboardLayout() {
 
       <ConfirmModal
         open={confirmLogoutOpen}
-        title="Log out of MRD Admin?"
+        title="Log out of Ministry console?"
         description="You will be signed out on this device. You can sign back in anytime."
         confirmLabel="Log out"
         cancelLabel="Stay signed in"

@@ -1,3 +1,7 @@
+import type { AdminPermission, AdminRole } from '@/lib/rbac';
+
+export type { AdminPermission, AdminRole };
+
 export type ApiMeta = {
   total?: number;
   page?: number;
@@ -12,12 +16,11 @@ export type ApiEnvelope<T = unknown> = {
   meta?: ApiMeta;
 };
 
-export type AdminRole = 'SUPER_ADMIN' | 'ADMIN';
-
 export type AdminUser = {
   id: string;
   role: 'ADMIN';
   adminRole?: AdminRole | string;
+  permissions?: AdminPermission[];
   firstName: string;
   middleName?: string;
   lastName: string;

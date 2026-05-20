@@ -8,7 +8,9 @@ import { ArrowRight, Lock, Mail } from 'lucide-react';
 import { AuthEyebrow } from '@/components/auth/AuthEyebrow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
+import { MINISTRY_FULL_NAME } from '@/config/ministry';
 import { adminLogin } from '@/features/auth/api';
 import { normalizeAxiosError } from '@/lib/api/errors';
 import { useAuthStore } from '@/stores/auth-store';
@@ -30,7 +32,7 @@ export default function LoginPage() {
     mutationFn: adminLogin,
     onSuccess: (data) => {
       if (data.user.role !== 'ADMIN') {
-        toast.error('This account is not an admin user.');
+        toast.error('This account is not a ministry staff user.');
         return;
       }
       setSession(data.user, data.tokens.accessToken, data.tokens.refreshToken);
@@ -44,12 +46,12 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-1">
-      <AuthEyebrow>Staff console</AuthEyebrow>
+      <AuthEyebrow>Ministry staff console</AuthEyebrow>
       <h1 className="font-display text-[clamp(2rem,4.5vw,2.75rem)] font-normal leading-[1.06] tracking-[-0.02em] text-brand-navy">
-        Sign in to <em className="text-brand-hero-blue not-italic">admin.</em>
+        Sign in to <em className="text-brand-hero-blue not-italic">MoH Katsina.</em>
       </h1>
       <p className="mt-3 max-w-md text-[15px] leading-relaxed text-brand-body">
-        Use the email and password issued to your MRD Online Clinic administrator account.
+        Use the credentials issued by {MINISTRY_FULL_NAME} for this oversight console.
       </p>
 
       <form className="mt-8 space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
@@ -63,34 +65,25 @@ export default function LoginPage() {
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="you@mrdonlineclinic.com"
+              placeholder="you@health.katsina.gov.ng"
               className="rounded-xl border-slate-200 pl-12 focus-visible:border-sky-500 focus-visible:ring-sky-500/20"
               {...form.register('email')}
             />
           </div>
-          {form.formState.errors.email ? (
-            <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
-          ) : null}
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="password" className="text-[12px] font-medium text-slate-700">
             Password
           </Label>
-          <div className="relative">
-            <Lock className="pointer-events-none absolute left-4 top-1/2 size-[1.125rem] -translate-y-1/2 text-slate-400" aria-hidden />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              className="rounded-xl border-slate-200 pl-12 focus-visible:border-sky-500 focus-visible:ring-sky-500/20"
-              {...form.register('password')}
-            />
-          </div>
-          {form.formState.errors.password ? (
-            <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
-          ) : null}
+          <PasswordInput
+            id="password"
+            leftIcon={<Lock strokeWidth={2} />}
+            autoComplete="current-password"
+            placeholder="••••••••"
+            className="rounded-xl border-slate-200 focus-visible:border-sky-500 focus-visible:ring-sky-500/20"
+            {...form.register('password')}
+          />
         </div>
 
         <Button

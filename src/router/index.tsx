@@ -1,8 +1,21 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { RootLayout } from '@/layouts/RootLayout';
 import { RequireAuth, RequireGuest } from '@/router/guards';
+import { RequirePermission } from '@/router/PermissionGuard';
+import type { AdminPermission } from '@/lib/rbac';
+
+function withPermission(Page: ComponentType, permission: AdminPermission) {
+  return function PermissionWrappedPage() {
+    return (
+      <RequirePermission permission={permission}>
+        <Page />
+      </RequirePermission>
+    );
+  };
+}
 
 export const router = createBrowserRouter([
   {
@@ -38,19 +51,52 @@ export const router = createBrowserRouter([
           },
           {
             path: 'practitioners',
-            lazy: async () => ({ Component: (await import('@/pages/PractitionersPage')).default }),
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/PractitionersPage');
+              return { Component: withPermission(Page, 'practitioners:read') };
+            },
+          },
+          {
+            path: 'practitioners/:id',
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/PractitionerDetailPage');
+              return { Component: withPermission(Page, 'practitioners:read') };
+            },
           },
           {
             path: 'patients',
-            lazy: async () => ({ Component: (await import('@/pages/PatientsPage')).default }),
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/PatientsPage');
+              return { Component: withPermission(Page, 'patients:read') };
+            },
+          },
+          {
+            path: 'patients/:id',
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/PatientDetailPage');
+              return { Component: withPermission(Page, 'patients:read') };
+            },
           },
           {
             path: 'audit',
-            lazy: async () => ({ Component: (await import('@/pages/AuditLogsPage')).default }),
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/AuditLogsPage');
+              return { Component: withPermission(Page, 'audit:read') };
+            },
           },
           {
             path: 'team',
-            lazy: async () => ({ Component: (await import('@/pages/AdminsTeamPage')).default }),
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/AdminsTeamPage');
+              return { Component: withPermission(Page, 'admins:read') };
+            },
+          },
+          {
+            path: 'team/:id',
+            lazy: async () => {
+              const { default: Page } = await import('@/pages/StaffDetailPage');
+              return { Component: withPermission(Page, 'admins:read') };
+            },
           },
         ],
       },
