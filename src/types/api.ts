@@ -1,4 +1,5 @@
 import type { AdminPermission, AdminRole } from '@/lib/rbac';
+import type { AppLanguage } from '@/types/language';
 
 export type { AdminPermission, AdminRole };
 
@@ -28,6 +29,7 @@ export type AdminUser = {
   phoneNumber: string;
   status: string;
   isEmailVerified: boolean;
+  preferredLanguage?: AppLanguage;
   lastLoginAt?: string;
 };
 

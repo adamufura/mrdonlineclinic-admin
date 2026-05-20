@@ -1,0 +1,25 @@
+{
+  "language": { "english": "Turanci", "hausa": "Hausa", "switch": "Harshe" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "practitioners": "Likitoci",
+    "patients": "Marasa lafiya",
+    "audit": "Rijistar bincike",
+    "team": "Ma'aikatan ma'aikata",
+    "operations": "Ayyuka",
+    "administration": "Gudanarwa"
+  },
+  "auth": {
+    "login": "Shiga",
+    "logout": "Fita",
+    "email": "Imel",
+    "password": "Kalmar sirri"
+  },
+  "common": {
+    "cancel": "Soke",
+    "confirm": "Tabbatar",
+    "save": "Ajiye",
+    "search": "Bincika",
+    "loading": "Ana lodawa…"
+  }
+}

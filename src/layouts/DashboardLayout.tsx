@@ -11,6 +11,8 @@ import {
   X,
 } from 'lucide-react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { toast } from 'sonner';
 import { GlobalSearch } from '@/components/admin/global-search';
 import { DualBrandMark } from '@/components/brand/DualBrandMark';
@@ -67,6 +69,7 @@ function SidebarNav({
   onNavigate?: () => void;
   can: (p: import('@/lib/rbac').AdminPermission) => boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="px-2 pb-2">
@@ -76,17 +79,17 @@ function SidebarNav({
           </Link>
         </div>
 
-        <p className="px-3 pb-1.5 pt-3 text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">Operations</p>
+        <p className="px-3 pb-1.5 pt-3 text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">{t('nav.operations')}</p>
         <nav className="flex flex-col gap-0.5">
-          <NavRow to={ROUTES.dashboard} label="Dashboard" icon={LayoutDashboard} onNavigate={onNavigate} end />
+          <NavRow to={ROUTES.dashboard} label={t('nav.dashboard')} icon={LayoutDashboard} onNavigate={onNavigate} end />
           {can('practitioners:read') ? (
-            <NavRow to={ROUTES.practitioners} label="Practitioners" icon={Stethoscope} onNavigate={onNavigate} />
+            <NavRow to={ROUTES.practitioners} label={t('nav.practitioners')} icon={Stethoscope} onNavigate={onNavigate} />
           ) : null}
           {can('patients:read') ? (
-            <NavRow to={ROUTES.patients} label="Patients" icon={Users} onNavigate={onNavigate} />
+            <NavRow to={ROUTES.patients} label={t('nav.patients')} icon={Users} onNavigate={onNavigate} />
           ) : null}
           {can('audit:read') ? (
-            <NavRow to={ROUTES.audit} label="Audit log" icon={ScrollText} onNavigate={onNavigate} />
+            <NavRow to={ROUTES.audit} label={t('nav.audit')} icon={ScrollText} onNavigate={onNavigate} />
           ) : null}
         </nav>
       </div>
@@ -94,10 +97,10 @@ function SidebarNav({
       {can('admins:read') ? (
         <div className="px-2 pb-2">
           <p className="px-3 pb-1.5 pt-3 text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">
-            Administration
+            {t('nav.administration')}
           </p>
           <nav className="flex flex-col gap-0.5">
-            <NavRow to={ROUTES.team} label="Ministry staff" icon={UsersRound} onNavigate={onNavigate} />
+            <NavRow to={ROUTES.team} label={t('nav.team')} icon={UsersRound} onNavigate={onNavigate} />
           </nav>
         </div>
       ) : null}
@@ -116,6 +119,7 @@ function SidebarChrome({
   initial: string;
   onRequestLogout: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-auto rounded-xl border border-white/[0.06] bg-white/[0.04] p-3">
       <div className="flex gap-2.5">
@@ -133,7 +137,7 @@ function SidebarChrome({
             className="mt-2 h-8 w-full justify-center rounded-lg border border-white/10 bg-white/[0.04] text-[12px] font-medium text-white/85 hover:bg-white/10 hover:text-white"
             onClick={onRequestLogout}
           >
-            Log out
+            {t('auth.logout')}
           </Button>
         </div>
       </div>
@@ -253,6 +257,7 @@ export function DashboardLayout() {
           <GlobalSearch inputRef={searchRef} />
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5">
+            <LanguageSwitcher />
             {mainApp ? (
               <a
                 href={mainApp}

@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { MINISTRY_FULL_NAME } from '@/config/ministry';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { adminLogin } from '@/features/auth/api';
+import { setAppLanguage } from '@/i18n';
+import type { AppLanguage } from '@/types/language';
 import { normalizeAxiosError } from '@/lib/api/errors';
 import { useAuthStore } from '@/stores/auth-store';
 
@@ -36,6 +39,8 @@ export default function LoginPage() {
         return;
       }
       setSession(data.user, data.tokens.accessToken, data.tokens.refreshToken);
+      const lang = (data.user.preferredLanguage === 'ha' ? 'ha' : 'en') as AppLanguage;
+      void setAppLanguage(lang);
       toast.success('Welcome');
       void navigate('/dashboard', { replace: true });
     },
@@ -46,6 +51,9 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-1">
+      <div className="mb-4 flex justify-end">
+        <LanguageSwitcher />
+      </div>
       <AuthEyebrow>Ministry staff console</AuthEyebrow>
       <h1 className="font-display text-[clamp(2rem,4.5vw,2.75rem)] font-normal leading-[1.06] tracking-[-0.02em] text-brand-navy">
         Sign in to <em className="text-brand-hero-blue not-italic">MoH Katsina.</em>

@@ -3,6 +3,7 @@ import { getApiBaseUrl } from '@/config/env';
 import { api } from '@/lib/api/client';
 import { getRefreshToken, useAuthStore } from '@/stores/auth-store';
 import type { AdminUser, ApiEnvelope, TokenPair } from '@/types/api';
+import type { AppLanguage } from '@/types/language';
 
 function unwrap<T>(data: ApiEnvelope<T>, fallbackMsg: string): T {
   if (!data.success) {
@@ -29,6 +30,11 @@ export async function adminLogin(body: AdminLoginBody): Promise<{ user: AdminUse
 export async function fetchMe(): Promise<AdminUser> {
   const { data } = await api.get<ApiEnvelope<AdminUser>>('/auth/me');
   return unwrap(data, 'Unable to load profile');
+}
+
+export async function updatePreferredLanguage(preferredLanguage: AppLanguage): Promise<AdminUser> {
+  const { data } = await api.patch<ApiEnvelope<AdminUser>>('/auth/me/language', { preferredLanguage });
+  return unwrap(data, 'Unable to update language');
 }
 
 export async function logout(): Promise<void> {

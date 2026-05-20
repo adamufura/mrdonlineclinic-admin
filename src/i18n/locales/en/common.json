@@ -1,0 +1,25 @@
+{
+  "language": { "english": "English", "hausa": "Hausa", "switch": "Language" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "practitioners": "Practitioners",
+    "patients": "Patients",
+    "audit": "Audit log",
+    "team": "Ministry staff",
+    "operations": "Operations",
+    "administration": "Administration"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "search": "Search",
+    "loading": "Loading…"
+  }
+}
