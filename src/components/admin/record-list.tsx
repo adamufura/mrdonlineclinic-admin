@@ -1,5 +1,7 @@
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { StatusBadge, statusToneForAccount, statusToneForVerification } from '@/components/admin/status-badge';
+import { labelAccountStatus, labelVerificationStatus } from '@/lib/i18n/admin-labels';
 import { cn } from '@/lib/utils/cn';
 
 const listCard = 'overflow-hidden rounded-2xl border border-[#e8edf4] bg-white shadow-sm';
@@ -25,10 +27,12 @@ export function RecordList({
   emptyMessage?: string;
   onItemClick: (id: string) => void;
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className={cn(listCard, 'px-4 py-12 text-center text-sm text-muted-foreground')}>
-        Loading…
+        {t('admin.recordList.loading')}
       </div>
     );
   }
@@ -36,7 +40,7 @@ export function RecordList({
   if (items.length === 0) {
     return (
       <div className={cn(listCard, 'px-4 py-12 text-center text-sm text-muted-foreground')}>
-        {emptyMessage ?? 'No records found.'}
+        {emptyMessage ?? t('admin.recordList.empty')}
       </div>
     );
   }
@@ -58,11 +62,11 @@ export function RecordList({
               {item.meta ? <p className="mt-1 text-xs text-muted-foreground">{item.meta}</p> : null}
               <div className="mt-2 flex flex-wrap gap-2">
                 {item.status ? (
-                  <StatusBadge label={item.status} tone={statusToneForAccount(item.status)} />
+                  <StatusBadge label={labelAccountStatus(item.status)} tone={statusToneForAccount(item.status)} />
                 ) : null}
                 {item.verificationStatus ? (
                   <StatusBadge
-                    label={item.verificationStatus}
+                    label={labelVerificationStatus(item.verificationStatus)}
                     tone={statusToneForVerification(item.verificationStatus)}
                   />
                 ) : null}
@@ -72,7 +76,7 @@ export function RecordList({
               </div>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1 text-right">
-              <span className="text-sm font-medium text-sky-700">View details</span>
+              <span className="text-sm font-medium text-sky-700">{t('admin.recordList.viewDetails')}</span>
               <ChevronRight className="size-5 text-sky-600" aria-hidden />
             </div>
           </button>

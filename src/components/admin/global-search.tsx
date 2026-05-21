@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { globalSearchAdmin } from '@/features/admin/api';
@@ -8,6 +9,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { ROUTES } from '@/router/routes';
 
 export function GlobalSearch({ inputRef }: { inputRef?: React.RefObject<HTMLInputElement | null> }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { can } = usePermissions();
   const [q, setQ] = useState('');
@@ -45,7 +47,7 @@ export function GlobalSearch({ inputRef }: { inputRef?: React.RefObject<HTMLInpu
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        placeholder="Search practitioners, patients, staff…"
+        placeholder={t('admin.globalSearch.placeholder')}
         className="h-9 border-[#e2e8f0] bg-[#eef1f6] pl-9 pr-14 text-[13px] shadow-none focus-visible:border-teal-500 focus-visible:bg-white focus-visible:ring-teal-500/20"
       />
       <kbd className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 rounded border border-[#e2e8f0] bg-white px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
@@ -55,15 +57,17 @@ export function GlobalSearch({ inputRef }: { inputRef?: React.RefObject<HTMLInpu
       {open && debouncedQ.length >= 2 ? (
         <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[min(70vh,420px)] overflow-y-auto rounded-xl border border-border bg-white py-2 shadow-float">
           {isFetching ? (
-            <p className="px-4 py-3 text-sm text-muted-foreground">Searching…</p>
+            <p className="px-4 py-3 text-sm text-muted-foreground">{t('admin.globalSearch.searching')}</p>
           ) : !hasResults ? (
-            <p className="px-4 py-3 text-sm text-muted-foreground">No matches for “{debouncedQ}”</p>
+            <p className="px-4 py-3 text-sm text-muted-foreground">
+              {t('admin.globalSearch.noMatches', { query: debouncedQ })}
+            </p>
           ) : (
             <>
               {can('practitioners:read') && (data?.practitioners?.length ?? 0) > 0 ? (
                 <div className="px-2 pb-1">
                   <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Practitioners
+                    {t('admin.globalSearch.practitioners')}
                   </p>
                   {data!.practitioners.map((p) => (
                     <button
@@ -87,7 +91,7 @@ export function GlobalSearch({ inputRef }: { inputRef?: React.RefObject<HTMLInpu
               {can('patients:read') && (data?.patients?.length ?? 0) > 0 ? (
                 <div className="px-2 pb-1">
                   <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Patients
+                    {t('admin.globalSearch.patients')}
                   </p>
                   {data!.patients.map((p) => (
                     <button
@@ -111,7 +115,7 @@ export function GlobalSearch({ inputRef }: { inputRef?: React.RefObject<HTMLInpu
               {can('admins:read') && (data?.staff?.length ?? 0) > 0 ? (
                 <div className="px-2">
                   <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Ministry staff
+                    {t('admin.globalSearch.staff')}
                   </p>
                   {data!.staff.map((s) => (
                     <button

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DetailTabs } from '@/components/admin/detail-tabs';
@@ -13,13 +14,11 @@ import { Label } from '@/components/ui/label';
 import { deletePatientAdmin, getPatientAdmin, updatePatientAdmin } from '@/features/admin/api';
 import { usePermissions } from '@/hooks/usePermissions';
 import { normalizeAxiosError } from '@/lib/api/errors';
+import { labelAccountStatus, labelAppointmentStatus } from '@/lib/i18n/admin-labels';
 import { ROUTES } from '@/router/routes';
 import { useAuthStore } from '@/stores/auth-store';
 
-function fmtDate(d?: string | Date) {
-  if (!d) return '—';
-  return new Date(d).toLocaleString();
-}
+const ACCOUNT_STATUS_OPTIONS = ['ACTIVE', 'SUSPENDED', 'DEACTIVATED', 'PENDING_VERIFICATION'] as const;
 
 type TabId = 'overview' | 'health' | 'appointments' | 'manage';
 
@@ -27,6 +26,7 @@ export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { t } = useTranslation();
   const { can } = usePermissions();
   const isSuper = useAuthStore((s) => s.user)?.adminRole === 'SUPER_ADMIN';
 
@@ -49,6 +49,11 @@ export default function PatientDetailPage() {
     gender: '',
   });
 
+  function fmtDate(d?: string | Date) {
+    if (!d) return t('common.notAvailable');
+    return new Date(d).toLocaleString();
+  }
+
   const updateMut = useMutation({
     mutationFn: () =>
       updatePatientAdmin(id!, {
@@ -59,7 +64,7 @@ export default function PatientDetailPage() {
         ...(form.gender ? { gender: form.gender } : {}),
       }),
     onSuccess: () => {
-      toast.success('Patient updated');
+      toast.success(t('admin.patientDetail.toasts.updated'));
       setEditing(false);
       void qc.invalidateQueries({ queryKey: ['admin', 'patient', id] });
     },
@@ -69,19 +74,19 @@ export default function PatientDetailPage() {
   const deleteMut = useMutation({
     mutationFn: () => deletePatientAdmin(id!),
     onSuccess: () => {
-      toast.success('Patient removed');
+      toast.success(t('admin.patientDetail.toasts.removed'));
       void navigate(ROUTES.patients);
     },
     onError: (e) => toast.error(normalizeAxiosError(e).message),
   });
 
-  if (query.isLoading) return <p className="text-muted-foreground">Loading patient…</p>;
+  if (query.isLoading) return <p className="text-muted-foreground">{t('admin.patientDetail.loading')}</p>;
   if (query.isError || !patient) {
     return (
       <div className="space-y-4">
         <p className="text-red-600">{normalizeAxiosError(query.error).message}</p>
         <Button asChild variant="outline">
-          <Link to={ROUTES.patients}>Back to patients</Link>
+          <Link to={ROUTES.patients}>{t('admin.patientDetail.back')}</Link>
         </Button>
       </div>
     );
@@ -107,17 +112,17 @@ export default function PatientDetailPage() {
   return (
     <DetailPageShell
       backTo={ROUTES.patients}
-      backLabel="Back to patients"
+      backLabel={t('admin.patientDetail.back')}
       title={name}
       subtitle={patient.email}
-      statuses={[{ label: patient.status, type: 'account' }]}
+      statuses={[{ label: labelAccountStatus(patient.status), type: 'account' }]}
     >
       <DetailTabs
         tabs={[
-          { id: 'overview', label: 'Overview', hint: 'Summary' },
-          { id: 'health', label: 'Health record', hint: 'Allergies & conditions' },
-          { id: 'appointments', label: 'Visits', hint: 'Appointments & prescriptions' },
-          { id: 'manage', label: 'Manage', hint: 'Edit or remove' },
+          { id: 'overview', label: t('admin.tabs.overview'), hint: t('admin.tabs.summaryHint') },
+          { id: 'health', label: t('admin.tabs.health'), hint: t('admin.tabs.healthHint') },
+          { id: 'appointments', label: t('admin.tabs.visits'), hint: t('admin.tabs.visitsHint') },
+          { id: 'manage', label: t('admin.tabs.manage'), hint: t('admin.tabs.manageHintEdit') },
         ]}
         active={tab}
         onChange={(id) => setTab(id as TabId)}
@@ -126,32 +131,36 @@ export default function PatientDetailPage() {
       {tab === 'overview' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <DetailPanel>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Appointments</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('admin.patientDetail.stats.appointments')}
+            </p>
             <p className="mt-1 font-display text-3xl text-brand-navy">{appointmentCount}</p>
           </DetailPanel>
           <DetailPanel>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Prescriptions</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('admin.patientDetail.stats.prescriptions')}
+            </p>
             <p className="mt-1 font-display text-3xl text-brand-navy">{prescriptionCount}</p>
           </DetailPanel>
           <DetailPanel className="sm:col-span-2 lg:col-span-1">
             <InfoGrid>
-              <InfoItem label="Phone" value={patient.phoneNumber} />
-              <InfoItem label="Gender" value={patient.gender as string} />
-              <InfoItem label="Date of birth" value={patient.dateOfBirth ? fmtDate(patient.dateOfBirth as string) : undefined} />
-              <InfoItem label="Registered" value={fmtDate(patient.createdAt as string)} />
+              <InfoItem label={t('admin.fields.phone')} value={patient.phoneNumber} />
+              <InfoItem label={t('admin.fields.gender')} value={patient.gender as string} />
+              <InfoItem label={t('admin.fields.dateOfBirth')} value={patient.dateOfBirth ? fmtDate(patient.dateOfBirth as string) : undefined} />
+              <InfoItem label={t('admin.fields.registered')} value={fmtDate(patient.createdAt as string)} />
             </InfoGrid>
           </DetailPanel>
           {patient.address ? (
             <DetailPanel className="sm:col-span-2 lg:col-span-3">
               <InfoItem
-                label="Address"
+                label={t('admin.fields.address')}
                 value={[
                   (patient.address as { city?: string }).city,
                   (patient.address as { state?: string }).state,
                   (patient.address as { country?: string }).country,
                 ]
                   .filter(Boolean)
-                  .join(', ') || '—'}
+                  .join(', ') || t('common.notAvailable')}
               />
             </DetailPanel>
           ) : null}
@@ -159,22 +168,22 @@ export default function PatientDetailPage() {
       )}
 
       {tab === 'health' && (
-        <DetailPanel title="Health information">
+        <DetailPanel title={t('admin.patientDetail.healthInfo')}>
           <InfoGrid>
             <InfoItem
-              label="Allergies"
+              label={t('admin.fields.allergies')}
               value={
                 Array.isArray(patient.allergies) && patient.allergies.length
                   ? (patient.allergies as string[]).join(', ')
-                  : 'None recorded'
+                  : t('admin.patientDetail.noneRecorded')
               }
             />
             <InfoItem
-              label="Chronic conditions"
+              label={t('admin.fields.chronicConditions')}
               value={
                 Array.isArray(patient.chronicConditions) && patient.chronicConditions.length
                   ? (patient.chronicConditions as string[]).join(', ')
-                  : 'None recorded'
+                  : t('admin.patientDetail.noneRecorded')
               }
             />
           </InfoGrid>
@@ -183,19 +192,23 @@ export default function PatientDetailPage() {
 
       {tab === 'appointments' && (
         <div className="space-y-4">
-          <DetailPanel title="Recent appointments">
+          <DetailPanel title={t('admin.patientDetail.recentAppointments')}>
             {(query.data?.appointments?.length ?? 0) === 0 ? (
-              <p className="text-sm text-muted-foreground">No appointments yet.</p>
+              <p className="text-sm text-muted-foreground">{t('admin.patientDetail.noAppointments')}</p>
             ) : (
               <ul className="divide-y divide-[#eef2f8]">
                 {query.data!.appointments.map((a) => {
                   const pr = a.practitioner as { firstName?: string; lastName?: string } | undefined;
                   return (
                     <li key={String(a._id)} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="font-medium">{pr ? `Dr. ${pr.firstName} ${pr.lastName}` : '—'}</p>
+                      <p className="font-medium">
+                        {pr
+                          ? `${t('admin.practitionerDetail.titlePrefix')} ${pr.firstName} ${pr.lastName}`
+                          : t('common.notAvailable')}
+                      </p>
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground">{fmtDate(a.scheduledStart as string)}</span>
-                        <StatusBadge label={String(a.status)} tone={statusToneForAccount(String(a.status))} />
+                        <StatusBadge label={labelAppointmentStatus(String(a.status))} tone={statusToneForAccount(String(a.status))} />
                       </div>
                     </li>
                   );
@@ -204,14 +217,14 @@ export default function PatientDetailPage() {
             )}
           </DetailPanel>
 
-          <DetailPanel title="Prescriptions">
+          <DetailPanel title={t('admin.patientDetail.prescriptions')}>
             {(query.data?.prescriptions?.length ?? 0) === 0 ? (
-              <p className="text-sm text-muted-foreground">No prescriptions issued.</p>
+              <p className="text-sm text-muted-foreground">{t('admin.patientDetail.noPrescriptionsIssued')}</p>
             ) : (
               <ul className="divide-y divide-[#eef2f8]">
                 {query.data!.prescriptions.map((rx) => (
                   <li key={String(rx._id)} className="flex justify-between py-3 text-sm">
-                    <span className="font-medium">{(rx.diagnosis as string) || 'Prescription'}</span>
+                    <span className="font-medium">{(rx.diagnosis as string) || t('admin.patientDetail.prescriptionFallback')}</span>
                     <span className="text-muted-foreground">{fmtDate(rx.issuedAt as string)}</span>
                   </li>
                 ))}
@@ -224,7 +237,7 @@ export default function PatientDetailPage() {
       {tab === 'manage' && (
         <div className="space-y-4">
           {can('patients:write') && editing ? (
-            <DetailPanel title="Edit patient details">
+            <DetailPanel title={t('admin.patientDetail.editPanelTitle')}>
               <form
                 className="grid max-w-xl gap-3"
                 onSubmit={(e) => {
@@ -234,37 +247,38 @@ export default function PatientDetailPage() {
               >
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label>First name</Label>
+                    <Label>{t('admin.fields.firstName')}</Label>
                     <Input className="mt-1" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
                   </div>
                   <div>
-                    <Label>Last name</Label>
+                    <Label>{t('admin.fields.lastName')}</Label>
                     <Input className="mt-1" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
                   </div>
                 </div>
                 <div>
-                  <Label>Phone</Label>
+                  <Label>{t('admin.fields.phone')}</Label>
                   <Input className="mt-1" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
                 </div>
                 <div>
-                  <Label>Account status</Label>
+                  <Label>{t('admin.fields.accountStatus')}</Label>
                   <select
                     className="mt-1 flex h-10 w-full rounded-lg border px-3 text-sm"
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value })}
                   >
-                    <option value="ACTIVE">Active</option>
-                    <option value="SUSPENDED">Suspended</option>
-                    <option value="DEACTIVATED">Deactivated</option>
-                    <option value="PENDING_VERIFICATION">Pending verification</option>
+                    {ACCOUNT_STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {labelAccountStatus(status)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex gap-2">
                   <Button type="submit" disabled={updateMut.isPending}>
-                    Save changes
+                    {t('admin.patientDetail.saveChanges')}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setEditing(false)}>
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </form>
@@ -272,14 +286,14 @@ export default function PatientDetailPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {can('patients:write') ? (
-                <ManageActionCard title="Edit patient" description="Update name, phone, or account status.">
-                  <ManageActionButton onClick={startEdit}>Edit patient details</ManageActionButton>
+                <ManageActionCard title={t('admin.patientDetail.editTitle')} description={t('admin.patientDetail.manage.editDescription')}>
+                  <ManageActionButton onClick={startEdit}>{t('admin.patientDetail.manage.editButton')}</ManageActionButton>
                 </ManageActionCard>
               ) : null}
               {isSuper ? (
-                <ManageActionCard title="Remove permanently" description="Delete this patient from the system. Cannot be undone." variant="danger">
+                <ManageActionCard title={t('admin.patientDetail.manage.removeTitle')} description={t('admin.patientDetail.manage.removeDescription')} variant="danger">
                   <ManageActionButton variant="destructive" onClick={() => setDeleteOpen(true)}>
-                    Delete patient
+                    {t('admin.patientDetail.manage.deleteButton')}
                   </ManageActionButton>
                 </ManageActionCard>
               ) : null}
@@ -290,9 +304,9 @@ export default function PatientDetailPage() {
 
       <ConfirmModal
         open={deleteOpen}
-        title="Delete patient permanently?"
-        description="This cannot be undone."
-        confirmLabel="Delete"
+        title={t('admin.patientDetail.deletePermanentTitle')}
+        description={t('admin.patientDetail.deletePermanentDescription')}
+        confirmLabel={t('common.delete')}
         variant="destructive"
         busy={deleteMut.isPending}
         onCancel={() => !deleteMut.isPending && setDeleteOpen(false)}

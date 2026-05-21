@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ListToolbar } from '@/components/admin/list-toolbar';
 import { PageHeader, PrimaryActionButton } from '@/components/admin/page-header';
 import { PaginationBar } from '@/components/admin/pagination-bar';
@@ -16,19 +17,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createPatientAdmin, listPatientsAdmin } from '@/features/admin/api';
 import { usePermissions } from '@/hooks/usePermissions';
+import { phoneMeta } from '@/lib/i18n/admin-labels';
 import { normalizeAxiosError } from '@/lib/api/errors';
 import { ROUTES } from '@/router/routes';
 
-const onboardSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email(),
-  phoneNumber: z.string().min(5),
-});
-
-type OnboardForm = z.infer<typeof onboardSchema>;
-
 export default function PatientsPage() {
+  const { t } = useTranslation();
   const { can } = usePermissions();
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -40,9 +34,18 @@ export default function PatientsPage() {
   const [lastOnboardMsg, setLastOnboardMsg] = useState<string | null>(null);
   const limit = 20;
 
+  const onboardSchema = z.object({
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    email: z.string().email(),
+    phoneNumber: z.string().min(5),
+  });
+
+  type OnboardForm = z.infer<typeof onboardSchema>;
+
   useEffect(() => {
-    const t = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 350);
-    return () => window.clearTimeout(t);
+    const timer = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 350);
+    return () => window.clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
@@ -70,7 +73,7 @@ export default function PatientsPage() {
     mutationFn: (v: OnboardForm) => createPatientAdmin(v),
     onSuccess: (data) => {
       setLastOnboardMsg(data.message);
-      toast.success('Patient onboarded');
+      toast.success(t('admin.patients.onboarded'));
       form.reset();
       setOnboardOpen(false);
       void qc.invalidateQueries({ queryKey: ['admin', 'patients'] });
@@ -86,15 +89,23 @@ export default function PatientsPage() {
     id: String(row._id),
     title: [row.firstName, row.lastName].filter(Boolean).join(' '),
     subtitle: row.email,
-    meta: row.phoneNumber ? `Phone: ${row.phoneNumber}` : undefined,
+    meta: phoneMeta(row.phoneNumber),
     status: row.status,
   }));
+
+  const statusOptions = [
+    { value: '', label: t('admin.filters.all') },
+    { value: 'ACTIVE', label: t('admin.filters.active') },
+    { value: 'SUSPENDED', label: t('admin.filters.suspended') },
+    { value: 'DEACTIVATED', label: t('admin.filters.deactivated') },
+    { value: 'PENDING_VERIFICATION', label: t('admin.patients.filters.pendingVerification') },
+  ];
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Patients"
-        description="Search and onboard patients registered on the MRD Online Clinic platform under Ministry oversight."
+        title={t('admin.patients.title')}
+        description={t('admin.patients.description')}
         action={
           can('patients:write') ? (
             <PrimaryActionButton
@@ -104,7 +115,7 @@ export default function PatientsPage() {
               }}
             >
               <Plus className="size-4" />
-              Onboard patient
+              {t('admin.patients.onboardAction')}
             </PrimaryActionButton>
           ) : undefined
         }
@@ -115,20 +126,14 @@ export default function PatientsPage() {
       <ListToolbar
         search={searchInput}
         onSearchChange={setSearchInput}
-        searchPlaceholder="Search by name, email, or phone…"
+        searchPlaceholder={t('admin.patients.searchPlaceholder')}
         filters={[
           {
             id: 'status',
-            label: 'Status',
+            label: t('admin.filters.status'),
             value: statusFilter,
             onChange: setStatusFilter,
-            options: [
-              { value: '', label: 'All' },
-              { value: 'ACTIVE', label: 'Active' },
-              { value: 'SUSPENDED', label: 'Suspended' },
-              { value: 'DEACTIVATED', label: 'Deactivated' },
-              { value: 'PENDING_VERIFICATION', label: 'Pending verification' },
-            ],
+            options: statusOptions,
           },
         ]}
       />
@@ -137,7 +142,7 @@ export default function PatientsPage() {
         <RecordList
           items={listItems}
           loading={query.isLoading}
-          emptyMessage="No patients match your search."
+          emptyMessage={t('admin.patients.empty')}
           onItemClick={(id) => navigate(ROUTES.patientDetail(id))}
         />
         <div className="overflow-hidden rounded-b-2xl border border-t-0 border-[#e8edf4] bg-white shadow-sm">
@@ -147,32 +152,36 @@ export default function PatientsPage() {
 
       {onboardOpen ? (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-          <button type="button" className="absolute inset-0 bg-black/50" onClick={() => !onboardMut.isPending && setOnboardOpen(false)} />
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/50"
+            onClick={() => !onboardMut.isPending && setOnboardOpen(false)}
+          />
           <div className="relative z-[1] w-full max-w-md rounded-2xl border border-[#e8edf4] bg-white p-6 shadow-lg">
-            <h2 className="font-display text-lg font-medium text-brand-navy">Onboard patient</h2>
+            <h2 className="font-display text-lg font-medium text-brand-navy">{t('admin.patients.onboard.title')}</h2>
             <form className="mt-4 space-y-3" onSubmit={form.handleSubmit((v) => onboardMut.mutate(v))}>
               <div>
-                <Label>First name</Label>
+                <Label>{t('admin.fields.firstName')}</Label>
                 <Input className="mt-1" {...form.register('firstName')} />
               </div>
               <div>
-                <Label>Last name</Label>
+                <Label>{t('admin.fields.lastName')}</Label>
                 <Input className="mt-1" {...form.register('lastName')} />
               </div>
               <div>
-                <Label>Email</Label>
+                <Label>{t('admin.fields.email')}</Label>
                 <Input type="email" className="mt-1" {...form.register('email')} />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{t('admin.fields.phone')}</Label>
                 <Input className="mt-1" {...form.register('phoneNumber')} />
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => setOnboardOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={onboardMut.isPending} className="bg-gradient-to-br from-teal-500 to-teal-700 text-white">
-                  {onboardMut.isPending ? 'Creating…' : 'Create account'}
+                  {onboardMut.isPending ? t('admin.patients.onboard.creating') : t('admin.patients.onboard.submit')}
                 </Button>
               </div>
             </form>

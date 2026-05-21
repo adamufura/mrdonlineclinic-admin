@@ -1,11 +1,15 @@
 {
-  "language": { "english": "Turanci", "hausa": "Hausa", "switch": "Harshe" },
+  "language": {
+    "english": "Turanci",
+    "hausa": "Hausa",
+    "switch": "Harshe"
+  },
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Allon gida",
     "practitioners": "Likitoci",
     "patients": "Marasa lafiya",
-    "audit": "Rijistar bincike",
-    "team": "Ma'aikatan ma'aikata",
+    "audit": "Rajistar bincike",
+    "team": "Ma'aikatan ma'aikatar lafiya",
     "operations": "Ayyuka",
     "administration": "Gudanarwa"
   },
@@ -13,13 +17,449 @@
     "login": "Shiga",
     "logout": "Fita",
     "email": "Imel",
-    "password": "Kalmar sirri"
+    "password": "Kalmar sirri",
+    "signingIn": "Ana shiga…",
+    "loginTitle": "Allon ma'aikatar lafiya",
+    "loginSubtitle": "Shiga da asusun ma'aikaci na Ma'aikatar Lafiya Katsina.",
+    "forgotPassword": "Ka manta kalmar sirri?",
+    "invalidCredentials": "Imel ko kalmar sirri ba daidai ba."
   },
   "common": {
     "cancel": "Soke",
     "confirm": "Tabbatar",
     "save": "Ajiye",
-    "search": "Bincika",
-    "loading": "Ana lodawa…"
+    "search": "Nema",
+    "loading": "Ana lodawa…",
+    "back": "Komawa",
+    "edit": "Gyara",
+    "delete": "Share",
+    "remove": "Cire",
+    "close": "Rufe",
+    "yes": "Ee",
+    "no": "A'a",
+    "all": "Duka",
+    "required": "Ana buƙata",
+    "notAvailable": "—"
+  },
+  "admin": {
+    "layout": {
+      "mainApp": "Manhajar babba",
+      "help": "Taimako",
+      "signedIn": "An shiga",
+      "openMenu": "Buɗe menu",
+      "closeMenu": "Rufe menu",
+      "staffFallback": "Ma'aikaci",
+      "logoutTitle": "A fita daga allon ma'aikatar lafiya?",
+      "logoutDescription": "Za a fitar da kai a wannan na'urar. Za ka iya shiga kowane lokaci.",
+      "logoutConfirm": "Fita",
+      "logoutCancel": "Zauna a shiga",
+      "signedOut": "An fita"
+    },
+    "authAside": {
+      "tagline": "Allon aminci don {{ministry}} — kula da ayyukan likitanci ta intanet a jihar Katsina."
+    },
+    "authHero": {
+      "title": "Cibiyar ayyukan ma'aikatar lafiya",
+      "subtitle": "Tabbatar da likitoci, shigar da marasa lafiya, da bincika ayyukan dandali don {{ministry}}."
+    },
+    "notFound": {
+      "title": "404",
+      "message": "Wannan shafi ba ya wanzu a cikin allon gudanarwa.",
+      "back": "Komawa allon gida"
+    },
+    "recordList": {
+      "loading": "Ana lodawa…",
+      "empty": "Babu rubutun da aka samu.",
+      "viewDetails": "Duba cikakken bayani"
+    },
+    "pagination": {
+      "pageOf": "Shafi {{page}} na {{totalPages}}",
+      "total": " · {{total}} duka",
+      "previous": "Na baya",
+      "next": "Na gaba"
+    },
+    "globalSearch": {
+      "placeholder": "Nemi likitoci, marasa lafiya, ma'aikata…",
+      "searching": "Ana nema…",
+      "noMatches": "Babu sakamako ga “{{query}}”",
+      "practitioners": "Likitoci",
+      "patients": "Marasa lafiya",
+      "staff": "Ma'aikatan ma'aikatar lafiya"
+    },
+    "filters": {
+      "all": "Duka",
+      "allStatuses": "Duk matsayi",
+      "allRoles": "Duk matsayin aiki",
+      "status": "Matsayi",
+      "role": "Matsayin aiki",
+      "verification": "Tabbatarwa",
+      "active": "Mai aiki",
+      "deactivated": "An kashe",
+      "suspended": "An dakatar"
+    },
+    "fields": {
+      "firstName": "Sunan farko",
+      "lastName": "Sunan ƙarshe",
+      "middleName": "Sunan tsakiya",
+      "email": "Imel",
+      "phone": "Wayar hannu",
+      "password": "Kalmar sirri",
+      "license": "Lasisi",
+      "bio": "Bayanin kai",
+      "specialty": "Kwararrawa",
+      "gender": "Jinsi",
+      "status": "Matsayi",
+      "role": "Matsayin shiga",
+      "notes": "Bayanan kula",
+      "registered": "An yi rajista",
+      "onboarded": "An shigar",
+      "verifiedAt": "An tabbatar a",
+      "rejectedAt": "An ƙi a",
+      "suspendedAt": "An dakatar a",
+      "lastLogin": "Shiga na ƙarshe",
+      "dateOfBirth": "Ranar haihuwa",
+      "bloodGroup": "Rukunin jini",
+      "allergies": "Allergies",
+      "conditions": "Halayen lafiya",
+      "medications": "Magunguna",
+      "emergencyContact": "Lambar gaggawa",
+      "specialties": "Kwararru",
+      "experience": "Kwarewa",
+      "address": "Adireshi",
+      "accountStatus": "Matsayin asusu",
+      "chronicConditions": "Halayen lafiya na tsawon lokaci",
+      "credentialsDocument": "Takardar shaida",
+      "emailVerified": "An tabbatar da imel",
+      "accountCreated": "An kirkiro asusu"
+    },
+    "tabs": {
+      "overview": "Bayani",
+      "profile": "Bayanan martaba",
+      "appointments": "Alƙawuran",
+      "manage": "Gudanarwa",
+      "health": "Bayanan lafiya",
+      "visits": "Ziyarori",
+      "overviewHintSummary": "Taƙaitaccen bayani",
+      "overviewHintAccount": "Bayanan asusu",
+      "profileHint": "Lambobi da takardun shaida",
+      "appointmentsHint": "Ziyarorin kwanan nan",
+      "manageHintVerify": "Tabbatar, gyara, dakatar",
+      "manageHintEdit": "Gyara ko cire",
+      "healthHint": "Allergies da halayen lafiya",
+      "visitsHint": "Alƙawura da magunguna",
+      "summaryHint": "Taƙaitawa"
+    },
+    "dashboard": {
+      "greetingMorning": "Barka da safiya",
+      "greetingAfternoon": "Barka da rana",
+      "greetingEvening": "Barka da yamma",
+      "there": "kai",
+      "roleSubtitle": "Kulawar {{ministry}} — {{role}}. Kula da ayyukan likitanci ta intanet a jihar Katsina.",
+      "ministryStaffFallback": "Ma'aikatan ma'aikatar lafiya",
+      "stats": {
+        "patients": "Marasa lafiya",
+        "practitioners": "Likitoci",
+        "appointments": "Alƙawuran",
+        "staff": "Ma'aikatan ma'aikatar lafiya",
+        "activePatientsMeta": "{{count}} masu aiki a dandali",
+        "verifiedBookableMeta": "{{count}} an tabbatar kuma ana iya booking",
+        "appointmentsMeta": "{{pending}} a jira · {{done}} an kammala",
+        "consoleOperators": "Masu amfani da allon"
+      },
+      "needsAttention": "Abin kulawa",
+      "review": "Bita",
+      "pendingVerification": "Ana jiran tabbatarwa",
+      "pendingAppointments": "Alƙawuran da ke jira",
+      "appointmentsByStatus": "Alƙawura bisa matsayi",
+      "appointmentsEmpty": "Babu bayanan alƙawura tukuna.",
+      "totalLabel": "Jimilla",
+      "platformMix": "Haɗin dandali",
+      "platformMixHint": "Yawan marasa lafiya, likitoci, da rubutun alƙawura da aka yi rajista.",
+      "platformPatients": "Marasa lafiya",
+      "platformPractitioners": "Likitoci",
+      "platformAppointments": "Alƙawuran",
+      "quickActions": "Ayyuka masu sauri",
+      "onboardPractitioner": "Shigar da likita",
+      "onboardPatient": "Shigar da mara lafiya",
+      "manageStaff": "Gudanar da ma'aikata",
+      "auditLog": "Rajistar bincike",
+      "recentActivity": "Ayyukan kwanan nan",
+      "viewAll": "Duba duka",
+      "noRecent": "Babu ayyukan kwanan nan.",
+      "noStatsAccess": "Matsayinka ba ya haɗa da kididdigar dandali. Yi amfani da gefen gefi don sassan da aka ba ka izini.",
+      "searchTip": "Shawara: danna {{kbd}} don neman wani rubutu"
+    },
+    "login": {
+      "eyebrow": "Allon ma'aikatan ma'aikatar lafiya",
+      "titleLead": "Shiga zuwa",
+      "titleEm": "MoH Katsina.",
+      "subtitle": "Yi amfani da bayanan shiga da {{ministry}} ta bayar don wannan allon kula.",
+      "emailLabel": "Adireshin imel",
+      "emailPlaceholder": "you@health.katsina.gov.ng",
+      "notStaff": "Wannan asusu ba na ma'aikacin ma'aikatar lafiya ba ne.",
+      "welcome": "Barka da zuwa"
+    },
+    "practitioners": {
+      "title": "Likitoci",
+      "description": "Shigar da likitoci a madadin ma'aikatar lafiya, tabbatar da takardun shaida, da gudanar da shiga dandali.",
+      "onboardAction": "Shigar da likita",
+      "searchPlaceholder": "Suna, imel, waya, ko lasisi…",
+      "empty": "Babu likitoci. Gwada wani bincike ko tacewa.",
+      "onboarded": "An shigar da likita",
+      "accountStatus": "Matsayin asusu",
+      "titlePrefix": "Dr.",
+      "onboard": {
+        "title": "Shigar da likita",
+        "description": "Yana ƙirƙirar asusu da kalmar sirri ta tsoho. Likita zai iya kammala bayanansa daga baya.",
+        "licenseOptional": "Lambar lasisi (na zaɓi)",
+        "specialty": "Kwararrawa",
+        "selectSpecialty": "Zaɓi kwararrawa…",
+        "autoVerify": "Tabbatar nan take (ba da damar booking)",
+        "submit": "Ƙirƙiri asusu",
+        "creating": "Ana ƙirƙirawa…",
+        "selectSpecialtyError": "Zaɓi kwararrawa"
+      },
+      "filters": {
+        "allStatuses": "Duk matsayi",
+        "pendingReview": "Ana jiran bita"
+      }
+    },
+    "patients": {
+      "title": "Marasa lafiya",
+      "description": "Nema da shigar da marasa lafiya da aka yi rajista a dandalin MRD Online Clinic karkashin kulawar ma'aikatar lafiya.",
+      "onboardAction": "Shigar da mara lafiya",
+      "searchPlaceholder": "Nema ta suna, imel, ko waya…",
+      "empty": "Babu marasa lafiya da suka dace da bincikenka.",
+      "onboarded": "An shigar da mara lafiya",
+      "onboard": {
+        "title": "Shigar da mara lafiya",
+        "submit": "Ƙirƙiri asusu",
+        "creating": "Ana ƙirƙirawa…"
+      },
+      "filters": {
+        "pendingVerification": "Ana jiran tabbatarwa"
+      }
+    },
+    "team": {
+      "title": "Ma'aikatan ma'aikatar lafiya",
+      "description": "Ƙirƙiri asusu ga jami'an Ma'aikatar Lafiya Katsina. Kowane sabon asusu yana karɓar kalmar sirri ta tsoho {{password}} — ma'aikata su canza bayan shiga na farko.",
+      "addTitle": "Ƙara ma'aikaci",
+      "directoryTitle": "Jerin ma'aikata",
+      "directoryHint": "Danna layi don buɗe cikakken bayani da gudanar da asusu.",
+      "searchPlaceholder": "Suna, imel, ko waya…",
+      "empty": "Babu asusun ma'aikata.",
+      "createSubmit": "Ƙirƙiri asusun ma'aikaci",
+      "creating": "Ana ƙirƙirawa…",
+      "created": "An ƙirƙiri asusun ma'aikaci"
+    },
+    "audit": {
+      "title": "Rajistar bincike",
+      "description": "Rubutun da ba za a iya canzawa ba na muhimman ayyukan gudanarwa (tabbatarwa, dakatarwa, gayyata, da sauransu).",
+      "filterLabel": "Tace ta lambar aiki",
+      "filterPlaceholder": "misali PRACTITIONER_VERIFIED",
+      "loading": "Ana lodawa rubutun bincike…",
+      "empty": "Babu rubutun bincike ga wannan tacewar.",
+      "columns": {
+        "when": "Lokaci",
+        "actor": "Mai aiki",
+        "action": "Aiki",
+        "target": "Abin da aka yi"
+      },
+      "system": "Tsarin"
+    },
+    "practitionerDetail": {
+      "loading": "Ana lodawa likita…",
+      "back": "Komawa likitoci",
+      "titlePrefix": "Dr.",
+      "bookable": "Ana iya yin booking",
+      "stats": {
+        "reviews": "Jimillar bita",
+        "appointments": "Alƙawuran"
+      },
+      "openProfile": "Buɗe bayanan jama'a",
+      "verify": "Tabbatar da likita",
+      "reject": "Ƙi aikace-aikacen",
+      "suspend": "Dakatar da asusu",
+      "resetPassword": "Sake saita kalmar sirri",
+      "remove": "Cire likita",
+      "editTitle": "Gyara bayanan martaba",
+      "saveChanges": "Ajiye canje-canje",
+      "saving": "Ana ajiyewa…",
+      "verifyNotes": "Bayanan tabbatarwa (na zaɓi)",
+      "rejectNotes": "Dalilin ƙin amincewa",
+      "verifyConfirm": "Tabbatar",
+      "rejectConfirm": "Ƙi",
+      "suspendConfirm": "Dakatar",
+      "deleteTitle": "A cire likita?",
+      "deleteDescription": "Wannan yana share asusun likita da bayanai masu alaƙa har abada. Ba za a iya juyawa ba.",
+      "suspendTitle": "A dakatar da likita?",
+      "suspendDescription": "Ba za su iya shiga ko karɓar alƙawura ba har an sake kunna su.",
+      "verifyTitle": "A tabbatar da wannan likita?",
+      "rejectTitle": "A ƙi wannan aikace-aikacen?",
+      "recentAppointments": "Alƙawuran kwanan nan",
+      "noAppointments": "Babu alƙawura tukuna.",
+      "profileInfo": "Bayanan martaba",
+      "yearsCount": "{{count}} shekaru",
+      "openDocument": "Buɗe takarda",
+      "approveTitle": "Amince da likita",
+      "approveHint": "Bayanan kula na zaɓi don rajistar bincike.",
+      "optionalNotesPlaceholder": "Bayanan kula na zaɓi",
+      "confirmApproval": "Tabbatar da amincewa",
+      "rejectModalTitle": "Ƙi likita",
+      "rejectHint": "Ka ba da dalili (ana buƙata).",
+      "confirmRejection": "Tabbatar da ƙin amincewa",
+      "suspendNameTitle": "A dakatar da {{name}}?",
+      "suspendBookingDescription": "Ba za su bayyana don booking ba har an sake kunna su.",
+      "deletePermanentTitle": "A share likita har abada?",
+      "deletePermanentDescription": "Ba za a iya juyawa ba. Za a cire rubutun likita daga tsarin.",
+      "manage": {
+        "editDescription": "Sabunta suna, waya, lasisi, ko bayanin kai.",
+        "editButton": "Gyara cikakken bayani",
+        "approveDescription": "Alama takardun shaida an tabbatar don karɓar booking.",
+        "approveButton": "Amince da tabbatar",
+        "rejectDescription": "Ƙi wannan likita tare da dalili a rubuce.",
+        "rejectButton": "Ƙi aikace-aikacen",
+        "resetPasswordDescription": "Mayar da kalmar shiga ta tsoho (mrdclinic).",
+        "resetPasswordButton": "Mayar da kalmar sirri ta tsoho",
+        "suspendDescription": "Ba za su bayyana don booking na marasa lafiya ba.",
+        "suspendButton": "Dakatar da likita",
+        "removeTitle": "Cire har abada",
+        "removeDescription": "Share wannan likita daga tsarin. Ba za a iya juyawa ba.",
+        "deleteButton": "Share likita"
+      },
+      "toasts": {
+        "updated": "An sabunta likita",
+        "verified": "An tabbatar",
+        "rejected": "An ƙi",
+        "suspended": "An dakatar",
+        "removed": "An cire likita"
+      }
+    },
+    "patientDetail": {
+      "loading": "Ana lodawa mara lafiya…",
+      "back": "Komawa marasa lafiya",
+      "stats": {
+        "appointments": "Alƙawuran",
+        "prescriptions": "Magunguna"
+      },
+      "healthEmpty": "Babu bayanan lafiya a fayil.",
+      "recentAppointments": "Alƙawuran kwanan nan",
+      "prescriptions": "Magunguna",
+      "noAppointments": "Babu alƙawura tukuna.",
+      "noPrescriptions": "Babu magunguna tukuna.",
+      "noPrescriptionsIssued": "Babu magungunan da aka bayar.",
+      "healthInfo": "Bayanan lafiya",
+      "noneRecorded": "Babu rubutu",
+      "prescriptionFallback": "Magani",
+      "editPanelTitle": "Gyara bayanan mara lafiya",
+      "deletePermanentTitle": "A share mara lafiya har abada?",
+      "deletePermanentDescription": "Ba za a iya juyawa ba.",
+      "manage": {
+        "editDescription": "Sabunta suna, waya, ko matsayin asusu.",
+        "editButton": "Gyara bayanan mara lafiya",
+        "removeTitle": "Cire har abada",
+        "removeDescription": "Share wannan mara lafiya daga tsarin. Ba za a iya juyawa ba.",
+        "deleteButton": "Share mara lafiya"
+      },
+      "editTitle": "Gyara mara lafiya",
+      "saveChanges": "Ajiye canje-canje",
+      "remove": "Cire mara lafiya",
+      "deleteTitle": "A cire mara lafiya?",
+      "deleteDescription": "Wannan yana share asusun mara lafiya har abada. Ba za a iya juyawa ba.",
+      "toasts": {
+        "updated": "An sabunta mara lafiya",
+        "removed": "An cire mara lafiya"
+      }
+    },
+    "staffDetail": {
+      "loading": "Ana lodawa…",
+      "back": "Komawa ma'aikatan ma'aikatar lafiya",
+      "editTitle": "Gyara asusun ma'aikaci",
+      "saveChanges": "Ajiye canje-canje",
+      "resetPassword": "Sake saita kalmar sirri",
+      "deactivate": "Kashe asusu",
+      "remove": "Cire asusun ma'aikaci",
+      "deactivateTitle": "A kashe asusun ma'aikaci?",
+      "deactivateDescription": "Ba za su iya shiga ba har an sake kunna su.",
+      "deleteTitle": "A cire asusun ma'aikaci?",
+      "deleteDescription": "Wannan yana share asusun ma'aikaci har abada. Ba za a iya juyawa ba.",
+      "selfNotice": "Ba za ka iya kashe ko share asusunka ba.",
+      "superNotice": "Ana iya gudanar da asusun Babban Mai Gudanarwa kawai ta wani Babban Mai Gudanarwa.",
+      "accountInfo": "Bayanan asusu",
+      "deletePermanentTitle": "A share ma'aikaci har abada?",
+      "deletePermanentDescription": "Ba za a iya juyawa ba.",
+      "deactivateConfirm": "Kashe",
+      "manage": {
+        "editDescription": "Sabunta suna, waya, matsayi, ko matsayin shiga.",
+        "editButton": "Gyara bayanan ma'aikaci",
+        "resetPasswordDescription": "Mayar da kalmar shiga ta tsoho (mrdclinic).",
+        "resetPasswordButton": "Mayar da kalmar sirri ta tsoho",
+        "deactivateDescription": "Ba za su iya shiga wannan allon ba.",
+        "deactivateButton": "Kashe ma'aikaci",
+        "removeTitle": "Cire har abada",
+        "removeDescription": "Share wannan asusun ma'aikaci. Ba za a iya juyawa ba.",
+        "deleteButton": "Share asusun ma'aikaci"
+      },
+      "toasts": {
+        "updated": "An sabunta ma'aikaci",
+        "deactivated": "An kashe ma'aikaci",
+        "removed": "An cire ma'aikaci"
+      }
+    },
+    "enums": {
+      "phonePrefix": "Wayar hannu: {{phone}}",
+      "bookable": "Ana iya yin booking",
+      "accountStatus": {
+        "ACTIVE": "Mai aiki",
+        "SUSPENDED": "An dakatar",
+        "DEACTIVATED": "An kashe",
+        "PENDING": "Ana jira",
+        "PENDING_VERIFICATION": "Ana jiran tabbatarwa"
+      },
+      "verificationStatus": {
+        "UNVERIFIED": "Ba a tabbatar ba",
+        "PENDING": "Ana jiran bita",
+        "PENDING_REVIEW": "Ana jiran bita",
+        "VERIFIED": "An tabbatar",
+        "REJECTED": "An ƙi"
+      },
+      "adminRole": {
+        "SUPER_ADMIN": "Babban mai gudanarwa",
+        "DEPUTY_DIRECTOR": "Mataimakin direkta",
+        "OPERATIONS": "Ofishin ayyuka",
+        "MINISTRY_OFFICE": "Ofishin ma'aikatar lafiya",
+        "ONBOARDING": "Jami'in shigarwa",
+        "AUDITOR": "Bincike",
+        "ADMIN": "Mai gudanarwa"
+      },
+      "appointmentStatus": {
+        "PENDING": "Ana jira",
+        "CONFIRMED": "An tabbatar",
+        "COMPLETED": "An kammala",
+        "CANCELLED": "An soke",
+        "NO_SHOW": "Bai zo ba",
+        "IN_PROGRESS": "Ana ci gaba"
+      },
+      "gender": {
+        "MALE": "Namiji",
+        "FEMALE": "Mace",
+        "OTHER": "Sauran"
+      },
+      "auditAction": {
+        "LOGIN": "Shiga",
+        "LOGOUT": "Fita",
+        "CREATE": "Ƙirƙira",
+        "UPDATE": "Sabunta",
+        "DELETE": "Share",
+        "VERIFY": "Tabbatar",
+        "REJECT": "Ƙi",
+        "SUSPEND": "Dakatar",
+        "RESET_PASSWORD": "Sake saita kalmar sirri"
+      }
+    },
+    "validation": {
+      "email": "Ana buƙatar imel mai inganci",
+      "phone": "Ana buƙatar lambar waya"
+    }
   }
 }

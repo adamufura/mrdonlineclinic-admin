@@ -13,13 +13,449 @@
     "login": "Sign in",
     "logout": "Log out",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "signingIn": "Signing in…",
+    "loginTitle": "Ministry console",
+    "loginSubtitle": "Sign in with your Ministry of Health Katsina staff account.",
+    "forgotPassword": "Forgot password?",
+    "invalidCredentials": "Invalid email or password."
   },
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
     "search": "Search",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "back": "Back",
+    "edit": "Edit",
+    "delete": "Delete",
+    "remove": "Remove",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "required": "Required",
+    "notAvailable": "—"
+  },
+  "admin": {
+    "layout": {
+      "mainApp": "Main app",
+      "help": "Help",
+      "signedIn": "Signed in",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "staffFallback": "Staff",
+      "logoutTitle": "Log out of Ministry console?",
+      "logoutDescription": "You will be signed out on this device. You can sign back in anytime.",
+      "logoutConfirm": "Log out",
+      "logoutCancel": "Stay signed in",
+      "signedOut": "Signed out"
+    },
+    "authAside": {
+      "tagline": "Secure console for {{ministry}} — oversee telemedicine operations across Katsina State."
+    },
+    "authHero": {
+      "title": "Ministry operations hub",
+      "subtitle": "Verify practitioners, onboard patients, and audit platform activity for {{ministry}}."
+    },
+    "notFound": {
+      "title": "404",
+      "message": "That page does not exist in the admin console.",
+      "back": "Back to dashboard"
+    },
+    "recordList": {
+      "loading": "Loading…",
+      "empty": "No records found.",
+      "viewDetails": "View details"
+    },
+    "pagination": {
+      "pageOf": "Page {{page}} of {{totalPages}}",
+      "total": " · {{total}} total",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "globalSearch": {
+      "placeholder": "Search practitioners, patients, staff…",
+      "searching": "Searching…",
+      "noMatches": "No matches for “{{query}}”",
+      "practitioners": "Practitioners",
+      "patients": "Patients",
+      "staff": "Ministry staff"
+    },
+    "filters": {
+      "all": "All",
+      "allStatuses": "All statuses",
+      "allRoles": "All roles",
+      "status": "Status",
+      "role": "Role",
+      "verification": "Verification",
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "suspended": "Suspended"
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "middleName": "Middle name",
+      "email": "Email",
+      "phone": "Phone",
+      "password": "Password",
+      "license": "License",
+      "bio": "Bio",
+      "specialty": "Specialty",
+      "gender": "Gender",
+      "status": "Status",
+      "role": "Access role",
+      "notes": "Notes",
+      "registered": "Registered",
+      "onboarded": "Onboarded",
+      "verifiedAt": "Verified at",
+      "rejectedAt": "Rejected at",
+      "suspendedAt": "Suspended at",
+      "lastLogin": "Last login",
+      "dateOfBirth": "Date of birth",
+      "bloodGroup": "Blood group",
+      "allergies": "Allergies",
+      "conditions": "Conditions",
+      "medications": "Medications",
+      "emergencyContact": "Emergency contact",
+      "specialties": "Specialties",
+      "experience": "Experience",
+      "address": "Address",
+      "accountStatus": "Account status",
+      "chronicConditions": "Chronic conditions",
+      "credentialsDocument": "Credentials document",
+      "emailVerified": "Email verified",
+      "accountCreated": "Account created"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "profile": "Profile",
+      "appointments": "Appointments",
+      "manage": "Manage",
+      "health": "Health record",
+      "visits": "Visits",
+      "overviewHintSummary": "Summary at a glance",
+      "overviewHintAccount": "Account details",
+      "profileHint": "Contact & credentials",
+      "appointmentsHint": "Recent visits",
+      "manageHintVerify": "Verify, edit, suspend",
+      "manageHintEdit": "Edit or remove",
+      "healthHint": "Allergies & conditions",
+      "visitsHint": "Appointments & prescriptions",
+      "summaryHint": "Summary"
+    },
+    "dashboard": {
+      "greetingMorning": "Good morning",
+      "greetingAfternoon": "Good afternoon",
+      "greetingEvening": "Good evening",
+      "there": "there",
+      "roleSubtitle": "{{ministry}} oversight — {{role}}. Monitor telemedicine operations across Katsina State.",
+      "ministryStaffFallback": "Ministry staff",
+      "stats": {
+        "patients": "Patients",
+        "practitioners": "Practitioners",
+        "appointments": "Appointments",
+        "staff": "Ministry staff",
+        "activePatientsMeta": "{{count}} active on platform",
+        "verifiedBookableMeta": "{{count}} verified & bookable",
+        "appointmentsMeta": "{{pending}} pending · {{done}} done",
+        "consoleOperators": "Console operators"
+      },
+      "needsAttention": "Needs attention",
+      "review": "Review",
+      "pendingVerification": "Pending verification",
+      "pendingAppointments": "Pending appointments",
+      "appointmentsByStatus": "Appointments by status",
+      "appointmentsEmpty": "No appointment data yet.",
+      "totalLabel": "Total",
+      "platformMix": "Platform mix",
+      "platformMixHint": "Relative volume of registered patients, practitioners, and appointment records.",
+      "platformPatients": "Patients",
+      "platformPractitioners": "Practitioners",
+      "platformAppointments": "Appointments",
+      "quickActions": "Quick actions",
+      "onboardPractitioner": "Onboard practitioner",
+      "onboardPatient": "Onboard patient",
+      "manageStaff": "Manage staff",
+      "auditLog": "Audit log",
+      "recentActivity": "Recent activity",
+      "viewAll": "View all",
+      "noRecent": "No recent actions.",
+      "noStatsAccess": "Your role does not include platform statistics. Use the sidebar for permitted sections.",
+      "searchTip": "Tip: press {{kbd}} to search any record"
+    },
+    "login": {
+      "eyebrow": "Ministry staff console",
+      "titleLead": "Sign in to",
+      "titleEm": "MoH Katsina.",
+      "subtitle": "Use the credentials issued by {{ministry}} for this oversight console.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@health.katsina.gov.ng",
+      "notStaff": "This account is not a ministry staff user.",
+      "welcome": "Welcome"
+    },
+    "practitioners": {
+      "title": "Practitioners",
+      "description": "Onboard healthcare practitioners on behalf of the Ministry, verify credentials, and manage platform access.",
+      "onboardAction": "Onboard practitioner",
+      "searchPlaceholder": "Name, email, phone, or license…",
+      "empty": "No practitioners found. Try a different search or filter.",
+      "onboarded": "Practitioner onboarded",
+      "accountStatus": "Account status",
+      "titlePrefix": "Dr.",
+      "onboard": {
+        "title": "Onboard practitioner",
+        "description": "Creates an account with the default password. The practitioner can complete their profile later.",
+        "licenseOptional": "License number (optional)",
+        "specialty": "Specialty",
+        "selectSpecialty": "Select specialty…",
+        "autoVerify": "Verify immediately (allow booking)",
+        "submit": "Create account",
+        "creating": "Creating…",
+        "selectSpecialtyError": "Select a specialty"
+      },
+      "filters": {
+        "allStatuses": "All statuses",
+        "pendingReview": "Pending review"
+      }
+    },
+    "patients": {
+      "title": "Patients",
+      "description": "Search and onboard patients registered on the MRD Online Clinic platform under Ministry oversight.",
+      "onboardAction": "Onboard patient",
+      "searchPlaceholder": "Search by name, email, or phone…",
+      "empty": "No patients match your search.",
+      "onboarded": "Patient onboarded",
+      "onboard": {
+        "title": "Onboard patient",
+        "submit": "Create account",
+        "creating": "Creating…"
+      },
+      "filters": {
+        "pendingVerification": "Pending verification"
+      }
+    },
+    "team": {
+      "title": "Ministry staff",
+      "description": "Create accounts for Ministry of Health Katsina officers. Each new account receives the default password {{password}} — staff should change it after first sign-in.",
+      "addTitle": "Add staff member",
+      "directoryTitle": "Staff directory",
+      "directoryHint": "Tap any row to open full details and manage the account.",
+      "searchPlaceholder": "Name, email, or phone…",
+      "empty": "No staff accounts found.",
+      "createSubmit": "Create staff account",
+      "creating": "Creating…",
+      "created": "Staff account created"
+    },
+    "audit": {
+      "title": "Audit log",
+      "description": "Immutable record of sensitive admin actions (verification, suspensions, invitations, and more).",
+      "filterLabel": "Filter by action code",
+      "filterPlaceholder": "e.g. PRACTITIONER_VERIFIED",
+      "loading": "Loading audit entries…",
+      "empty": "No audit entries for this filter.",
+      "columns": {
+        "when": "When",
+        "actor": "Actor",
+        "action": "Action",
+        "target": "Target"
+      },
+      "system": "System"
+    },
+    "practitionerDetail": {
+      "loading": "Loading practitioner…",
+      "back": "Back to practitioners",
+      "titlePrefix": "Dr.",
+      "bookable": "Bookable",
+      "stats": {
+        "reviews": "Total reviews",
+        "appointments": "Appointments"
+      },
+      "openProfile": "Open public profile",
+      "verify": "Verify practitioner",
+      "reject": "Reject application",
+      "suspend": "Suspend account",
+      "resetPassword": "Reset password",
+      "remove": "Remove practitioner",
+      "editTitle": "Edit profile",
+      "saveChanges": "Save changes",
+      "saving": "Saving…",
+      "verifyNotes": "Verification notes (optional)",
+      "rejectNotes": "Rejection reason",
+      "verifyConfirm": "Verify",
+      "rejectConfirm": "Reject",
+      "suspendConfirm": "Suspend",
+      "deleteTitle": "Remove practitioner?",
+      "deleteDescription": "This permanently deletes the practitioner account and related data. This cannot be undone.",
+      "suspendTitle": "Suspend practitioner?",
+      "suspendDescription": "They will not be able to sign in or accept appointments until reactivated.",
+      "verifyTitle": "Verify this practitioner?",
+      "rejectTitle": "Reject this application?",
+      "recentAppointments": "Recent appointments",
+      "noAppointments": "No appointments yet.",
+      "profileInfo": "Profile information",
+      "yearsCount": "{{count}} years",
+      "openDocument": "Open document",
+      "approveTitle": "Approve practitioner",
+      "approveHint": "Optional notes for the audit log.",
+      "optionalNotesPlaceholder": "Optional notes",
+      "confirmApproval": "Confirm approval",
+      "rejectModalTitle": "Reject practitioner",
+      "rejectHint": "Please provide a reason (required).",
+      "confirmRejection": "Confirm rejection",
+      "suspendNameTitle": "Suspend {{name}}?",
+      "suspendBookingDescription": "They will no longer appear for booking until reactivated.",
+      "deletePermanentTitle": "Delete practitioner permanently?",
+      "deletePermanentDescription": "This cannot be undone. The practitioner record will be removed from the system.",
+      "manage": {
+        "editDescription": "Update name, phone, license, or bio.",
+        "editButton": "Edit profile details",
+        "approveDescription": "Mark credentials as verified so they can accept bookings.",
+        "approveButton": "Approve & verify",
+        "rejectDescription": "Decline this practitioner with a written reason.",
+        "rejectButton": "Reject application",
+        "resetPasswordDescription": "Set their login password back to the default (mrdclinic).",
+        "resetPasswordButton": "Reset to default password",
+        "suspendDescription": "They will no longer appear for patient booking.",
+        "suspendButton": "Suspend practitioner",
+        "removeTitle": "Remove permanently",
+        "removeDescription": "Delete this practitioner from the system. Cannot be undone.",
+        "deleteButton": "Delete practitioner"
+      },
+      "toasts": {
+        "updated": "Practitioner updated",
+        "verified": "Verified",
+        "rejected": "Rejected",
+        "suspended": "Suspended",
+        "removed": "Practitioner removed"
+      }
+    },
+    "patientDetail": {
+      "loading": "Loading patient…",
+      "back": "Back to patients",
+      "stats": {
+        "appointments": "Appointments",
+        "prescriptions": "Prescriptions"
+      },
+      "healthEmpty": "No health record on file.",
+      "recentAppointments": "Recent appointments",
+      "prescriptions": "Prescriptions",
+      "noAppointments": "No appointments yet.",
+      "noPrescriptions": "No prescriptions yet.",
+      "noPrescriptionsIssued": "No prescriptions issued.",
+      "healthInfo": "Health information",
+      "noneRecorded": "None recorded",
+      "prescriptionFallback": "Prescription",
+      "editPanelTitle": "Edit patient details",
+      "deletePermanentTitle": "Delete patient permanently?",
+      "deletePermanentDescription": "This cannot be undone.",
+      "manage": {
+        "editDescription": "Update name, phone, or account status.",
+        "editButton": "Edit patient details",
+        "removeTitle": "Remove permanently",
+        "removeDescription": "Delete this patient from the system. Cannot be undone.",
+        "deleteButton": "Delete patient"
+      },
+      "editTitle": "Edit patient",
+      "saveChanges": "Save changes",
+      "remove": "Remove patient",
+      "deleteTitle": "Remove patient?",
+      "deleteDescription": "This permanently deletes the patient account. This cannot be undone.",
+      "toasts": {
+        "updated": "Patient updated",
+        "removed": "Patient removed"
+      }
+    },
+    "staffDetail": {
+      "loading": "Loading…",
+      "back": "Back to ministry staff",
+      "editTitle": "Edit staff account",
+      "saveChanges": "Save changes",
+      "resetPassword": "Reset password",
+      "deactivate": "Deactivate account",
+      "remove": "Remove staff account",
+      "deactivateTitle": "Deactivate staff account?",
+      "deactivateDescription": "They will not be able to sign in until reactivated.",
+      "deleteTitle": "Remove staff account?",
+      "deleteDescription": "This permanently deletes the staff account. This cannot be undone.",
+      "selfNotice": "You cannot deactivate or delete your own account.",
+      "superNotice": "Super Administrator accounts can only be managed by another Super Administrator.",
+      "accountInfo": "Account information",
+      "deletePermanentTitle": "Delete staff permanently?",
+      "deletePermanentDescription": "This cannot be undone.",
+      "deactivateConfirm": "Deactivate",
+      "manage": {
+        "editDescription": "Update name, phone, status, or access role.",
+        "editButton": "Edit staff details",
+        "resetPasswordDescription": "Set their login password back to the default (mrdclinic).",
+        "resetPasswordButton": "Reset to default password",
+        "deactivateDescription": "They will no longer be able to sign in to this console.",
+        "deactivateButton": "Deactivate staff member",
+        "removeTitle": "Remove permanently",
+        "removeDescription": "Delete this staff account. Cannot be undone.",
+        "deleteButton": "Delete staff account"
+      },
+      "toasts": {
+        "updated": "Staff updated",
+        "deactivated": "Staff deactivated",
+        "removed": "Staff removed"
+      }
+    },
+    "enums": {
+      "phonePrefix": "Phone: {{phone}}",
+      "bookable": "Bookable",
+      "accountStatus": {
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended",
+        "DEACTIVATED": "Deactivated",
+        "PENDING": "Pending",
+        "PENDING_VERIFICATION": "Pending verification"
+      },
+      "verificationStatus": {
+        "UNVERIFIED": "Unverified",
+        "PENDING": "Pending review",
+        "PENDING_REVIEW": "Pending review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Rejected"
+      },
+      "adminRole": {
+        "SUPER_ADMIN": "Super Administrator",
+        "DEPUTY_DIRECTOR": "Deputy Director",
+        "OPERATIONS": "Operations Office",
+        "MINISTRY_OFFICE": "Ministry Office",
+        "ONBOARDING": "Onboarding Officer",
+        "AUDITOR": "Auditor",
+        "ADMIN": "Administrator"
+      },
+      "appointmentStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled",
+        "NO_SHOW": "No show",
+        "IN_PROGRESS": "In progress"
+      },
+      "gender": {
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "OTHER": "Other"
+      },
+      "auditAction": {
+        "LOGIN": "Login",
+        "LOGOUT": "Logout",
+        "CREATE": "Create",
+        "UPDATE": "Update",
+        "DELETE": "Delete",
+        "VERIFY": "Verify",
+        "REJECT": "Reject",
+        "SUSPEND": "Suspend",
+        "RESET_PASSWORD": "Reset password"
+      }
+    },
+    "validation": {
+      "email": "Valid email required",
+      "phone": "Phone required"
+    }
   }
 }

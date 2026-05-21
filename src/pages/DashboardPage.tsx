@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { DashboardIllustration } from '@/components/admin/dashboard-illustration';
 import { DonutChart, DonutLegend } from '@/components/admin/donut-chart';
 import { Button } from '@/components/ui/button';
@@ -17,20 +18,14 @@ import { MINISTRY_FULL_NAME } from '@/config/ministry';
 import { fetchPlatformStats, type AuditLogRow } from '@/features/admin/api';
 import { fetchMe } from '@/features/auth/api';
 import { usePermissions } from '@/hooks/usePermissions';
-import { ADMIN_ROLE_LABELS, canManageStaff } from '@/lib/rbac';
+import { greetingKey, labelAdminRole, labelAppointmentStatus, labelAuditAction } from '@/lib/i18n/admin-labels';
+import { canManageStaff } from '@/lib/rbac';
 import { cn } from '@/lib/utils/cn';
 import { ROUTES } from '@/router/routes';
 import { useAuthStore } from '@/stores/auth-store';
 
 const card =
   'rounded-2xl border border-[#e8edf4] bg-white shadow-sm transition-[box-shadow,transform] duration-200';
-
-function greetingLabel(): string {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
-}
 
 function todayLabel(): string {
   return new Intl.DateTimeFormat('en-GB', { weekday: 'long', month: 'short', day: 'numeric' }).format(new Date());
@@ -107,11 +102,11 @@ function Panel({ title, action, children, className }: { title: string; action?:
   );
 }
 
-function auditActor(log: AuditLogRow) {
+function auditActor(log: AuditLogRow, systemLabel: string) {
   const a = log.actor;
   if (a && typeof a === 'object') {
     const n = [a.firstName, a.lastName].filter(Boolean).join(' ');
-    return n || a.email || 'System';
+    return n || a.email || systemLabel;
   }
   return '—';
 }
@@ -120,16 +115,18 @@ function PlatformBar({
   patients,
   practitioners,
   appointments,
+  labels,
 }: {
   patients: number;
   practitioners: number;
   appointments: number;
+  labels: { patients: string; practitioners: string; appointments: string };
 }) {
   const total = patients + practitioners + appointments || 1;
   const segments = [
-    { label: 'Patients', value: patients, color: 'bg-sky-500' },
-    { label: 'Practitioners', value: practitioners, color: 'bg-teal-500' },
-    { label: 'Appointments', value: appointments, color: 'bg-indigo-400' },
+    { label: labels.patients, value: patients, color: 'bg-sky-500' },
+    { label: labels.practitioners, value: practitioners, color: 'bg-teal-500' },
+    { label: labels.appointments, value: appointments, color: 'bg-indigo-400' },
   ];
   return (
     <div className="space-y-3">
@@ -158,6 +155,7 @@ function PlatformBar({
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const cachedUser = useAuthStore((s) => s.user);
   const { can } = usePermissions();
   const { data: me } = useQuery({ queryKey: ['me'], queryFn: fetchMe });
@@ -168,20 +166,26 @@ export default function DashboardPage() {
   });
 
   const user = me ?? cachedUser;
-  const roleLabel =
-    user?.adminRole && ADMIN_ROLE_LABELS[user.adminRole as keyof typeof ADMIN_ROLE_LABELS]
-      ? ADMIN_ROLE_LABELS[user.adminRole as keyof typeof ADMIN_ROLE_LABELS]
-      : 'Ministry staff';
+  const roleLabel = user?.adminRole
+    ? labelAdminRole(user.adminRole)
+    : t('admin.dashboard.ministryStaffFallback');
 
   const fmt = (n?: number) => (typeof n === 'number' ? n.toLocaleString() : '—');
-  const apptEntries = Object.entries(stats?.appointmentsByStatus ?? {}).map(([label, value]) => ({
-    label,
+  const apptEntries = Object.entries(stats?.appointmentsByStatus ?? {}).map(([status, value]) => ({
+    status,
+    label: labelAppointmentStatus(status),
     value,
   }));
 
+  const greetingKeys = {
+    morning: 'admin.dashboard.greetingMorning',
+    afternoon: 'admin.dashboard.greetingAfternoon',
+    evening: 'admin.dashboard.greetingEvening',
+  } as const;
+  const greeting = t(greetingKeys[greetingKey()]);
+
   return (
     <div className="space-y-6">
-      {/* Hero — light, no heavy shadow */}
       <div className={cn(card, 'overflow-hidden p-0')}>
         <div className="grid lg:grid-cols-[1fr_minmax(200px,280px)]">
           <div className="p-6 md:p-8">
@@ -190,26 +194,25 @@ export default function DashboardPage() {
               {todayLabel()}
             </p>
             <h1 className="font-display text-[clamp(1.75rem,4vw,2.25rem)] font-normal leading-tight tracking-tight text-brand-navy">
-              {greetingLabel()},{' '}
-              <em className="font-medium not-italic text-sky-800">{user?.firstName ?? 'there'}</em>
+              {greeting},{' '}
+              <em className="font-medium not-italic text-sky-800">{user?.firstName ?? t('admin.dashboard.there')}</em>
             </h1>
             <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              {MINISTRY_FULL_NAME} oversight — {roleLabel.toLowerCase()}. Monitor telemedicine operations
-              across Katsina State.
+              {t('admin.dashboard.roleSubtitle', { ministry: MINISTRY_FULL_NAME, role: roleLabel })}
             </p>
             <p className="mt-3 text-xs text-muted-foreground">{user?.email}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {can('practitioners:read') ? (
                 <Button asChild size="sm" className="rounded-lg bg-gradient-to-r from-teal-600 to-sky-600 text-white shadow-sm">
                   <Link to={ROUTES.practitioners}>
-                    Practitioners
+                    {t('nav.practitioners')}
                     <ArrowRight className="ml-1 size-3.5" />
                   </Link>
                 </Button>
               ) : null}
               {canManageStaff(user?.adminRole) ? (
                 <Button asChild size="sm" variant="outline" className="rounded-lg">
-                  <Link to={ROUTES.team}>Ministry staff</Link>
+                  <Link to={ROUTES.team}>{t('nav.team')}</Link>
                 </Button>
               ) : null}
             </div>
@@ -225,59 +228,61 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               tint="sky"
-              label="Patients"
+              label={t('admin.dashboard.stats.patients')}
               value={isLoading ? '…' : fmt(stats?.patients)}
-              meta={`${fmt(stats?.activePatients)} active on platform`}
+              meta={t('admin.dashboard.stats.activePatientsMeta', { count: fmt(stats?.activePatients) })}
               icon={Users}
               href={can('patients:read') ? ROUTES.patients : undefined}
             />
             <StatCard
               tint="teal"
-              label="Practitioners"
+              label={t('admin.dashboard.stats.practitioners')}
               value={isLoading ? '…' : fmt(stats?.practitioners)}
-              meta={`${fmt(stats?.activePractitioners)} verified & bookable`}
+              meta={t('admin.dashboard.stats.verifiedBookableMeta', { count: fmt(stats?.activePractitioners) })}
               icon={Stethoscope}
               href={can('practitioners:read') ? ROUTES.practitioners : undefined}
             />
             <StatCard
               tint="indigo"
-              label="Appointments"
+              label={t('admin.dashboard.stats.appointments')}
               value={isLoading ? '…' : fmt(stats?.appointments)}
-              meta={`${fmt(stats?.pendingAppointments)} pending · ${fmt(stats?.completedAppointments)} done`}
+              meta={t('admin.dashboard.stats.appointmentsMeta', {
+                pending: fmt(stats?.pendingAppointments),
+                done: fmt(stats?.completedAppointments),
+              })}
               icon={CalendarDays}
             />
             <StatCard
               tint="violet"
-              label="Ministry staff"
+              label={t('admin.dashboard.stats.staff')}
               value={isLoading ? '…' : fmt(stats?.admins)}
-              meta="Console operators"
+              meta={t('admin.dashboard.stats.consoleOperators')}
               icon={UsersRound}
               href={can('admins:read') ? ROUTES.team : undefined}
             />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-12">
-            {/* Attention */}
             <Panel
-              title="Needs attention"
+              title={t('admin.dashboard.needsAttention')}
               className="lg:col-span-4"
               action={
                 can('practitioners:read') ? (
                   <Link to={ROUTES.practitioners} className="text-xs font-medium text-amber-800 hover:underline">
-                    Review
+                    {t('admin.dashboard.review')}
                   </Link>
                 ) : null
               }
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between rounded-xl bg-amber-50/90 px-4 py-3 ring-1 ring-amber-200/60">
-                  <span className="text-sm text-amber-950/90">Pending verification</span>
+                  <span className="text-sm text-amber-950/90">{t('admin.dashboard.pendingVerification')}</span>
                   <span className="font-display text-xl font-medium text-amber-950">
                     {isLoading ? '…' : fmt(stats?.pendingVerification)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-sky-50/90 px-4 py-3 ring-1 ring-sky-200/50">
-                  <span className="text-sm text-sky-950/90">Pending appointments</span>
+                  <span className="text-sm text-sky-950/90">{t('admin.dashboard.pendingAppointments')}</span>
                   <span className="font-display text-xl font-medium text-sky-950">
                     {isLoading ? '…' : fmt(stats?.pendingAppointments)}
                   </span>
@@ -285,10 +290,9 @@ export default function DashboardPage() {
               </div>
             </Panel>
 
-            {/* Donut chart */}
-            <Panel title="Appointments by status" className="lg:col-span-5">
+            <Panel title={t('admin.dashboard.appointmentsByStatus')} className="lg:col-span-5">
               {apptEntries.length === 0 && !isLoading ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">No appointment data yet.</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">{t('admin.dashboard.appointmentsEmpty')}</p>
               ) : (
                 <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-center">
                   <DonutChart data={apptEntries} size={148} stroke={24} />
@@ -297,21 +301,23 @@ export default function DashboardPage() {
               )}
             </Panel>
 
-            {/* Platform overview */}
-            <Panel title="Platform mix" className="lg:col-span-3">
+            <Panel title={t('admin.dashboard.platformMix')} className="lg:col-span-3">
               <PlatformBar
                 patients={stats?.patients ?? 0}
                 practitioners={stats?.practitioners ?? 0}
                 appointments={stats?.appointments ?? 0}
+                labels={{
+                  patients: t('admin.dashboard.platformPatients'),
+                  practitioners: t('admin.dashboard.platformPractitioners'),
+                  appointments: t('admin.dashboard.platformAppointments'),
+                }}
               />
-              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-                Relative volume of registered patients, practitioners, and appointment records.
-              </p>
+              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t('admin.dashboard.platformMixHint')}</p>
             </Panel>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Panel title="Quick actions">
+            <Panel title={t('admin.dashboard.quickActions')}>
               <div className="grid gap-2 sm:grid-cols-2">
                 {can('practitioners:onboard') ? (
                   <Link
@@ -321,7 +327,7 @@ export default function DashboardPage() {
                     <span className="flex size-9 items-center justify-center rounded-lg bg-teal-500/10 text-teal-700">
                       <Stethoscope className="size-4" />
                     </span>
-                    Onboard practitioner
+                    {t('admin.dashboard.onboardPractitioner')}
                   </Link>
                 ) : null}
                 {can('patients:write') ? (
@@ -332,7 +338,7 @@ export default function DashboardPage() {
                     <span className="flex size-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-700">
                       <UserPlus className="size-4" />
                     </span>
-                    Onboard patient
+                    {t('admin.dashboard.onboardPatient')}
                   </Link>
                 ) : null}
                 {canManageStaff(user?.adminRole) ? (
@@ -343,7 +349,7 @@ export default function DashboardPage() {
                     <span className="flex size-9 items-center justify-center rounded-lg bg-violet-500/10 text-violet-700">
                       <UsersRound className="size-4" />
                     </span>
-                    Manage staff
+                    {t('admin.dashboard.manageStaff')}
                   </Link>
                 ) : null}
                 {can('audit:read') ? (
@@ -354,25 +360,25 @@ export default function DashboardPage() {
                     <span className="flex size-9 items-center justify-center rounded-lg bg-slate-500/10 text-slate-700">
                       <Clock className="size-4" />
                     </span>
-                    Audit log
+                    {t('admin.dashboard.auditLog')}
                   </Link>
                 ) : null}
               </div>
             </Panel>
 
             <Panel
-              title="Recent activity"
+              title={t('admin.dashboard.recentActivity')}
               action={
                 can('audit:read') ? (
                   <Link to={ROUTES.audit} className="text-xs font-medium text-sky-700 hover:underline">
-                    View all
+                    {t('admin.dashboard.viewAll')}
                   </Link>
                 ) : null
               }
             >
               <ul className="max-h-[220px] space-y-0 overflow-y-auto">
                 {(stats?.recentAudit?.length ?? 0) === 0 ? (
-                  <li className="py-6 text-center text-sm text-muted-foreground">No recent actions.</li>
+                  <li className="py-6 text-center text-sm text-muted-foreground">{t('admin.dashboard.noRecent')}</li>
                 ) : (
                   stats!.recentAudit!.slice(0, 8).map((log) => (
                     <li
@@ -381,11 +387,9 @@ export default function DashboardPage() {
                     >
                       <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-teal-500" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium capitalize text-foreground">
-                          {log.action.replace(/_/g, ' ').toLowerCase()}
-                        </p>
+                        <p className="text-sm font-medium text-foreground">{labelAuditAction(log.action)}</p>
                         <p className="text-xs text-muted-foreground">
-                          {auditActor(log)}
+                          {auditActor(log, t('admin.audit.system'))}
                           {log.createdAt ? ` · ${new Date(log.createdAt).toLocaleString()}` : ''}
                         </p>
                       </div>
@@ -397,14 +401,13 @@ export default function DashboardPage() {
           </div>
         </>
       ) : (
-        <div className={cn(card, 'p-6 text-sm text-muted-foreground')}>
-          Your role does not include platform statistics. Use the sidebar for permitted sections.
-        </div>
+        <div className={cn(card, 'p-6 text-sm text-muted-foreground')}>{t('admin.dashboard.noStatsAccess')}</div>
       )}
 
       <p className="text-center text-xs text-muted-foreground">
-        Tip: press <kbd className="rounded border border-[#e2e8f0] bg-white px-1.5 py-0.5 font-mono">⌘K</kbd> to
-        search any record
+        {t('admin.dashboard.searchTip', {
+          kbd: '⌘K',
+        })}
       </p>
     </div>
   );

@@ -18,7 +18,7 @@ import { GlobalSearch } from '@/components/admin/global-search';
 import { DualBrandMark } from '@/components/brand/DualBrandMark';
 import { MINISTRY_FULL_NAME } from '@/config/ministry';
 import { usePermissions } from '@/hooks/usePermissions';
-import { ADMIN_ROLE_LABELS } from '@/lib/rbac';
+import { labelAdminRole } from '@/lib/i18n/admin-labels';
 import { ConfirmModal } from '@/components/shared/confirm-modal';
 import { Button } from '@/components/ui/button';
 import { logout } from '@/features/auth/api';
@@ -149,6 +149,7 @@ const sidebarShell =
   'relative flex h-dvh w-[260px] shrink-0 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-[#04132a] to-[#0a2545] px-[18px] pb-6 pt-6 before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_60%_30%_at_50%_0%,rgba(56,189,248,0.15),transparent_70%),radial-gradient(ellipse_50%_30%_at_50%_100%,rgba(94,234,212,0.1),transparent_70%)]';
 
 export function DashboardLayout() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { can } = usePermissions();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -157,16 +158,15 @@ export function DashboardLayout() {
   const searchRef = useRef<HTMLInputElement>(null);
   const mainApp = getMainAppUrl();
 
-  const roleKey = user?.adminRole as keyof typeof ADMIN_ROLE_LABELS | undefined;
-  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() || user.email : 'Staff';
-  const subtitle = roleKey && ADMIN_ROLE_LABELS[roleKey] ? ADMIN_ROLE_LABELS[roleKey] : MINISTRY_FULL_NAME;
+  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() || user.email : t('admin.layout.staffFallback');
+  const subtitle = user?.adminRole ? labelAdminRole(user.adminRole) : MINISTRY_FULL_NAME;
   const initial = (user?.firstName?.[0] ?? user?.email?.[0] ?? 'A').toUpperCase();
 
   async function performLogout() {
     setLogoutBusy(true);
     try {
       await logout();
-      toast.success('Signed out');
+      toast.success(t('admin.layout.signedOut'));
       window.location.assign(ROUTES.login);
     } catch (e) {
       toast.error(normalizeAxiosError(e).message);
@@ -215,7 +215,7 @@ export function DashboardLayout() {
           <button
             type="button"
             className="absolute inset-0 bg-black/50"
-            aria-label="Close menu"
+            aria-label={t('admin.layout.closeMenu')}
             onClick={() => setMobileOpen(false)}
           />
           <aside className={cn(sidebarShell, 'absolute left-0 top-0 flex h-full max-w-[85vw] shadow-2xl')}>
@@ -248,7 +248,7 @@ export function DashboardLayout() {
             size="icon"
             className="shrink-0 lg:hidden"
             type="button"
-            aria-label="Open menu"
+            aria-label={t('admin.layout.openMenu')}
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
@@ -266,20 +266,20 @@ export function DashboardLayout() {
                 className="hidden items-center gap-1.5 rounded-[9px] px-2 py-1.5 text-[13px] text-muted-foreground transition-colors hover:bg-[#eef1f6] hover:text-foreground sm:inline-flex"
               >
                 <ExternalLink className="h-4 w-4" />
-                Main app
+                {t('admin.layout.mainApp')}
               </a>
             ) : null}
             <button
               type="button"
               className="grid h-9 w-9 place-items-center rounded-[9px] text-muted-foreground transition-colors hover:bg-[#eef1f6] hover:text-foreground"
-              title="Help"
+              title={t('admin.layout.help')}
             >
               <HelpCircle className="h-[17px] w-[17px]" strokeWidth={2} />
             </button>
             <button
               type="button"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-white bg-gradient-to-br from-teal-300 to-sky-400 font-display text-[13px] font-medium text-[#04132a] shadow-[0_0_0_1px_#e2e8f0]"
-              title="Signed in"
+              title={t('admin.layout.signedIn')}
             >
               {initial}
             </button>
@@ -295,10 +295,10 @@ export function DashboardLayout() {
 
       <ConfirmModal
         open={confirmLogoutOpen}
-        title="Log out of Ministry console?"
-        description="You will be signed out on this device. You can sign back in anytime."
-        confirmLabel="Log out"
-        cancelLabel="Stay signed in"
+        title={t('admin.layout.logoutTitle')}
+        description={t('admin.layout.logoutDescription')}
+        confirmLabel={t('admin.layout.logoutConfirm')}
+        cancelLabel={t('admin.layout.logoutCancel')}
         variant="destructive"
         busy={logoutBusy}
         onCancel={() => !logoutBusy && setConfirmLogoutOpen(false)}

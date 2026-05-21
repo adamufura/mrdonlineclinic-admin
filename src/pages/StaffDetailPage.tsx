@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DetailTabs } from '@/components/admin/detail-tabs';
@@ -17,15 +18,13 @@ import {
   resetAdminPassword,
   updateAdminUser,
 } from '@/features/admin/api';
-import { ADMIN_ROLE_LABELS, ASSIGNABLE_ADMIN_ROLES, canManageStaff, type AssignableAdminRole } from '@/lib/rbac';
+import { ASSIGNABLE_ADMIN_ROLES, canManageStaff, type AssignableAdminRole } from '@/lib/rbac';
 import { normalizeAxiosError } from '@/lib/api/errors';
+import { labelAccountStatus, labelAdminRole } from '@/lib/i18n/admin-labels';
 import { ROUTES } from '@/router/routes';
 import { useAuthStore } from '@/stores/auth-store';
 
-function fmtDate(d?: string) {
-  if (!d) return '—';
-  return new Date(d).toLocaleString();
-}
+const STAFF_STATUS_OPTIONS = ['ACTIVE', 'DEACTIVATED', 'SUSPENDED'] as const;
 
 type TabId = 'overview' | 'manage';
 
@@ -33,6 +32,7 @@ export default function StaffDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { t } = useTranslation();
   const me = useAuthStore((s) => s.user);
   const isSuper = me?.adminRole === 'SUPER_ADMIN';
   const canManage = canManageStaff(me?.adminRole);
@@ -57,6 +57,11 @@ export default function StaffDetailPage() {
     adminRole: 'OPERATIONS' as AssignableAdminRole,
   });
 
+  function fmtDate(d?: string) {
+    if (!d) return t('common.notAvailable');
+    return new Date(d).toLocaleString();
+  }
+
   const updateMut = useMutation({
     mutationFn: async () => {
       await updateAdminUser(id!, {
@@ -70,7 +75,7 @@ export default function StaffDetailPage() {
       }
     },
     onSuccess: () => {
-      toast.success('Staff updated');
+      toast.success(t('admin.staffDetail.toasts.updated'));
       setEditing(false);
       void qc.invalidateQueries({ queryKey: ['admin', 'staff', id] });
       void qc.invalidateQueries({ queryKey: ['admin', 'users'] });
@@ -87,7 +92,7 @@ export default function StaffDetailPage() {
   const deactivateMut = useMutation({
     mutationFn: () => deactivateAdminUser(id!),
     onSuccess: () => {
-      toast.success('Staff deactivated');
+      toast.success(t('admin.staffDetail.toasts.deactivated'));
       setDeactivateOpen(false);
       void qc.invalidateQueries({ queryKey: ['admin', 'staff', id] });
     },
@@ -97,19 +102,19 @@ export default function StaffDetailPage() {
   const deleteMut = useMutation({
     mutationFn: () => deleteAdminUser(id!),
     onSuccess: () => {
-      toast.success('Staff removed');
+      toast.success(t('admin.staffDetail.toasts.removed'));
       void navigate(ROUTES.team);
     },
     onError: (e) => toast.error(normalizeAxiosError(e).message),
   });
 
-  if (query.isLoading) return <p className="text-muted-foreground">Loading…</p>;
+  if (query.isLoading) return <p className="text-muted-foreground">{t('admin.staffDetail.loading')}</p>;
   if (query.isError || !staff) {
     return (
       <div className="space-y-4">
         <p className="text-red-600">{normalizeAxiosError(query.error).message}</p>
         <Button asChild variant="outline">
-          <Link to={ROUTES.team}>Back to staff</Link>
+          <Link to={ROUTES.team}>{t('admin.staffDetail.back')}</Link>
         </Button>
       </div>
     );
@@ -118,7 +123,7 @@ export default function StaffDetailPage() {
   const isSelf = me?.id === String(staff._id);
   const isSuperRow = staff.adminRole === 'SUPER_ADMIN';
   const name = [staff.firstName, staff.lastName].filter(Boolean).join(' ');
-  const roleLabel = ADMIN_ROLE_LABELS[staff.adminRole as keyof typeof ADMIN_ROLE_LABELS] ?? staff.adminRole;
+  const roleLabel = labelAdminRole(staff.adminRole);
 
   function startEdit() {
     setForm({
@@ -137,30 +142,30 @@ export default function StaffDetailPage() {
   return (
     <DetailPageShell
       backTo={ROUTES.team}
-      backLabel="Back to ministry staff"
+      backLabel={t('admin.staffDetail.back')}
       title={name}
       subtitle={staff.email}
       statuses={[
-        { label: staff.status, type: 'account' },
+        { label: labelAccountStatus(staff.status), type: 'account' },
         { label: roleLabel, type: 'info' },
       ]}
     >
       <DetailTabs
         tabs={[
-          { id: 'overview', label: 'Overview', hint: 'Account details' },
-          { id: 'manage', label: 'Manage', hint: 'Edit, password, deactivate' },
+          { id: 'overview', label: t('admin.tabs.overview'), hint: t('admin.tabs.overviewHintAccount') },
+          { id: 'manage', label: t('admin.tabs.manage'), hint: t('admin.tabs.manageHintEdit') },
         ]}
         active={tab}
         onChange={(id) => setTab(id as TabId)}
       />
 
       {tab === 'overview' && (
-        <DetailPanel title="Account information">
+        <DetailPanel title={t('admin.staffDetail.accountInfo')}>
           <InfoGrid>
-            <InfoItem label="Phone" value={staff.phoneNumber} />
-            <InfoItem label="Access role" value={roleLabel} />
-            <InfoItem label="Email verified" value={staff.isEmailVerified ? 'Yes' : 'No'} />
-            <InfoItem label="Account created" value={fmtDate(staff.createdAt)} />
+            <InfoItem label={t('admin.fields.phone')} value={staff.phoneNumber} />
+            <InfoItem label={t('admin.fields.role')} value={roleLabel} />
+            <InfoItem label={t('admin.fields.emailVerified')} value={staff.isEmailVerified ? t('common.yes') : t('common.no')} />
+            <InfoItem label={t('admin.fields.accountCreated')} value={fmtDate(staff.createdAt)} />
           </InfoGrid>
         </DetailPanel>
       )}
@@ -168,7 +173,7 @@ export default function StaffDetailPage() {
       {tab === 'manage' && (
         <div className="space-y-4">
           {canManage && editing ? (
-            <DetailPanel title="Edit staff account">
+            <DetailPanel title={t('admin.staffDetail.editTitle')}>
               <form
                 className="grid max-w-lg gap-3"
                 onSubmit={(e) => {
@@ -178,34 +183,36 @@ export default function StaffDetailPage() {
               >
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label>First name</Label>
+                    <Label>{t('admin.fields.firstName')}</Label>
                     <Input className="mt-1" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
                   </div>
                   <div>
-                    <Label>Last name</Label>
+                    <Label>{t('admin.fields.lastName')}</Label>
                     <Input className="mt-1" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
                   </div>
                 </div>
                 <div>
-                  <Label>Phone</Label>
+                  <Label>{t('admin.fields.phone')}</Label>
                   <Input className="mt-1" value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} />
                 </div>
                 <div>
-                  <Label>Account status</Label>
+                  <Label>{t('admin.fields.accountStatus')}</Label>
                   <select
                     className="mt-1 flex h-10 w-full rounded-lg border px-3 text-sm"
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value })}
                     disabled={isSuperRow}
                   >
-                    <option value="ACTIVE">Active</option>
-                    <option value="DEACTIVATED">Deactivated</option>
-                    <option value="SUSPENDED">Suspended</option>
+                    {STAFF_STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {labelAccountStatus(status)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 {isSuper && !isSuperRow ? (
                   <div>
-                    <Label>Access role</Label>
+                    <Label>{t('admin.fields.role')}</Label>
                     <select
                       className="mt-1 flex h-10 w-full rounded-lg border px-3 text-sm"
                       value={form.adminRole}
@@ -213,7 +220,7 @@ export default function StaffDetailPage() {
                     >
                       {ASSIGNABLE_ADMIN_ROLES.map((r) => (
                         <option key={r} value={r}>
-                          {ADMIN_ROLE_LABELS[r]}
+                          {labelAdminRole(r)}
                         </option>
                       ))}
                     </select>
@@ -221,10 +228,10 @@ export default function StaffDetailPage() {
                 ) : null}
                 <div className="flex gap-2">
                   <Button type="submit" disabled={updateMut.isPending}>
-                    Save changes
+                    {t('admin.staffDetail.saveChanges')}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setEditing(false)}>
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </form>
@@ -232,28 +239,28 @@ export default function StaffDetailPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {canManage && !isSuperRow ? (
-                <ManageActionCard title="Edit account" description="Update name, phone, status, or access role.">
-                  <ManageActionButton onClick={startEdit}>Edit staff details</ManageActionButton>
+                <ManageActionCard title={t('admin.staffDetail.editTitle')} description={t('admin.staffDetail.manage.editDescription')}>
+                  <ManageActionButton onClick={startEdit}>{t('admin.staffDetail.manage.editButton')}</ManageActionButton>
                 </ManageActionCard>
               ) : null}
               {canManage && !isSuperRow ? (
-                <ManageActionCard title="Reset password" description="Set their login password back to the default (mrdclinic).">
+                <ManageActionCard title={t('admin.staffDetail.resetPassword')} description={t('admin.staffDetail.manage.resetPasswordDescription')}>
                   <ManageActionButton disabled={resetMut.isPending} onClick={() => resetMut.mutate()}>
-                    Reset to default password
+                    {t('admin.staffDetail.manage.resetPasswordButton')}
                   </ManageActionButton>
                 </ManageActionCard>
               ) : null}
               {canManage && !isSelf && !isSuperRow && staff.status === 'ACTIVE' ? (
-                <ManageActionCard title="Deactivate account" description="They will no longer be able to sign in to this console." variant="danger">
+                <ManageActionCard title={t('admin.staffDetail.deactivate')} description={t('admin.staffDetail.manage.deactivateDescription')} variant="danger">
                   <ManageActionButton variant="destructive" onClick={() => setDeactivateOpen(true)}>
-                    Deactivate staff member
+                    {t('admin.staffDetail.manage.deactivateButton')}
                   </ManageActionButton>
                 </ManageActionCard>
               ) : null}
               {isSuper && !isSelf && !isSuperRow ? (
-                <ManageActionCard title="Remove permanently" description="Delete this staff account. Cannot be undone." variant="danger">
+                <ManageActionCard title={t('admin.staffDetail.manage.removeTitle')} description={t('admin.staffDetail.manage.removeDescription')} variant="danger">
                   <ManageActionButton variant="destructive" onClick={() => setDeleteOpen(true)}>
-                    Delete staff account
+                    {t('admin.staffDetail.manage.deleteButton')}
                   </ManageActionButton>
                 </ManageActionCard>
               ) : null}
@@ -264,9 +271,9 @@ export default function StaffDetailPage() {
 
       <ConfirmModal
         open={deactivateOpen}
-        title="Deactivate this staff account?"
-        description="They will not be able to sign in until reactivated."
-        confirmLabel="Deactivate"
+        title={t('admin.staffDetail.deactivateTitle')}
+        description={t('admin.staffDetail.deactivateDescription')}
+        confirmLabel={t('admin.staffDetail.deactivateConfirm')}
         variant="destructive"
         busy={deactivateMut.isPending}
         onCancel={() => !deactivateMut.isPending && setDeactivateOpen(false)}
@@ -275,9 +282,9 @@ export default function StaffDetailPage() {
 
       <ConfirmModal
         open={deleteOpen}
-        title="Delete staff permanently?"
-        description="This cannot be undone."
-        confirmLabel="Delete"
+        title={t('admin.staffDetail.deletePermanentTitle')}
+        description={t('admin.staffDetail.deletePermanentDescription')}
+        confirmLabel={t('common.delete')}
         variant="destructive"
         busy={deleteMut.isPending}
         onCancel={() => !deleteMut.isPending && setDeleteOpen(false)}

@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { AdminAuthHero } from '@/components/auth/AdminAuthHero';
 import { DualBrandMark } from '@/components/brand/DualBrandMark';
 import { MINISTRY_FULL_NAME } from '@/config/ministry';
 import { cn } from '@/lib/utils/cn';
 
 export function AdminAuthAside() {
+  const { t } = useTranslation();
   return (
     <aside
       className={cn(
@@ -24,8 +26,7 @@ export function AdminAuthAside() {
 
       <div className="relative z-10 border-t border-white/[0.08] pt-6">
         <p className="max-w-sm font-display text-lg font-light leading-snug text-white/90">
-          Secure console for <em className="text-sky-300 not-italic">{MINISTRY_FULL_NAME}</em> — oversee telemedicine
-          operations across Katsina State.
+          {t('admin.authAside.tagline', { ministry: MINISTRY_FULL_NAME })}
         </p>
       </div>
     </aside>
