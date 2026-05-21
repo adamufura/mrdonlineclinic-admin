@@ -213,7 +213,8 @@
         "autoVerify": "Verify immediately (allow booking)",
         "submit": "Create account",
         "creating": "Creating…",
-        "selectSpecialtyError": "Select a specialty"
+        "selectSpecialtyError": "Select a specialty",
+        "specialtiesLoadError": "Could not load specialties. Refresh the page and try again."
       },
       "filters": {
         "allStatuses": "All statuses",

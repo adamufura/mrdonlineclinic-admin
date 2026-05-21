@@ -19,7 +19,7 @@ import { createPractitionerAdmin, listPractitionersAdmin, type PractitionerAdmin
 import { listSpecialties } from '@/features/specialties/api';
 import { usePermissions } from '@/hooks/usePermissions';
 import { phoneMeta } from '@/lib/i18n/admin-labels';
-import { normalizeAxiosError } from '@/lib/api/errors';
+import { humanizeFieldMessage, normalizeAxiosError } from '@/lib/api/errors';
 import { ROUTES } from '@/router/routes';
 
 function rowId(row: PractitionerAdminRow) {
@@ -113,7 +113,17 @@ export default function PractitionersPage() {
       void qc.invalidateQueries({ queryKey: ['admin', 'practitioners'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'stats'] });
     },
-    onError: (e) => toast.error(normalizeAxiosError(e).message),
+    onError: (e) => {
+      const apiErr = normalizeAxiosError(e);
+      const specialtyMsgs = apiErr.fieldErrors?.specialties;
+      if (specialtyMsgs?.length) {
+        onboardForm.setError('specialtyId', {
+          type: 'server',
+          message: humanizeFieldMessage('specialties', specialtyMsgs[0]),
+        });
+      }
+      toast.error(apiErr.message);
+    },
   });
 
   const items = query.data?.items ?? [];
@@ -238,14 +248,24 @@ export default function PractitionersPage() {
               </div>
               <div>
                 <Label>{t('admin.practitioners.onboard.specialty')}</Label>
-                <select className="mt-1 flex h-10 w-full rounded-lg border border-border px-3 text-sm" {...onboardForm.register('specialtyId')}>
+                <select
+                  className="mt-1 flex h-10 w-full rounded-lg border border-border px-3 text-sm"
+                  disabled={specialtiesQuery.isLoading || specialtiesQuery.isError}
+                  {...onboardForm.register('specialtyId')}
+                >
                   <option value="">{t('admin.practitioners.onboard.selectSpecialty')}</option>
                   {(specialtiesQuery.data ?? []).map((s) => (
-                    <option key={s._id} value={s._id}>
+                    <option key={s.id} value={s.id}>
                       {s.name}
                     </option>
                   ))}
                 </select>
+                {onboardForm.formState.errors.specialtyId ? (
+                  <p className="mt-1 text-sm text-destructive">{onboardForm.formState.errors.specialtyId.message}</p>
+                ) : null}
+                {specialtiesQuery.isError ? (
+                  <p className="mt-1 text-sm text-destructive">{t('admin.practitioners.onboard.specialtiesLoadError')}</p>
+                ) : null}
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" {...onboardForm.register('autoVerify')} />
@@ -255,7 +275,11 @@ export default function PractitionersPage() {
                 <Button type="button" variant="outline" disabled={onboardMut.isPending} onClick={() => setOnboardOpen(false)}>
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={onboardMut.isPending} className="bg-gradient-to-br from-teal-500 to-teal-700 text-white">
+                <Button
+                  type="submit"
+                  disabled={onboardMut.isPending || specialtiesQuery.isLoading || specialtiesQuery.isError || !(specialtiesQuery.data?.length ?? 0)}
+                  className="bg-gradient-to-br from-teal-500 to-teal-700 text-white"
+                >
                   {onboardMut.isPending ? t('admin.practitioners.onboard.creating') : t('admin.practitioners.onboard.submit')}
                 </Button>
               </div>

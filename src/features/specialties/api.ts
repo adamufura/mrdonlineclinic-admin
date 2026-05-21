@@ -2,10 +2,14 @@ import { api } from '@/lib/api/client';
 import { unwrapEnvelope } from '@/lib/api/envelope';
 import type { ApiEnvelope } from '@/types/api';
 
+/** Matches GET /api/v1/specialties public payload (`id`, not `_id`). */
 export type SpecialtyOption = {
-  _id: string;
+  id: string;
   name: string;
-  slug?: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  isActive?: boolean;
 };
 
 export async function listSpecialties(): Promise<SpecialtyOption[]> {

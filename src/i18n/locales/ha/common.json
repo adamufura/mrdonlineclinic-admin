@@ -217,7 +217,8 @@
         "autoVerify": "Tabbatar nan take (ba da damar booking)",
         "submit": "Ƙirƙiri asusu",
         "creating": "Ana ƙirƙirawa…",
-        "selectSpecialtyError": "Zaɓi kwararrawa"
+        "selectSpecialtyError": "Zaɓi kwararrawa",
+        "specialtiesLoadError": "An kasa lodawa kwararru. Sabunta shafi sannan ka sake gwadawa."
       },
       "filters": {
         "allStatuses": "Duk matsayi",

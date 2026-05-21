@@ -282,6 +282,8 @@ const dict = {
     'Nema da shigar da marasa lafiya da aka yi rajista a dandalin MRD Online Clinic karkashin kulawar ma\'aikatar lafiya.',
   'Search by name, email, or phone…': 'Nema ta suna, imel, ko waya…',
   'Select a specialty': 'Zaɓi kwararrawa',
+  'Could not load specialties. Refresh the page and try again.':
+    'An kasa lodawa kwararru. Sabunta shafi sannan ka sake gwadawa.',
   'Select specialty…': 'Zaɓi kwararrawa…',
   'Set their login password back to the default (mrdclinic).': 'Mayar da kalmar shiga ta tsoho (mrdclinic).',
   Specialties: 'Kwararru',
